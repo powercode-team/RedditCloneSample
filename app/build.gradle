@@ -1,15 +1,32 @@
 apply plugin: 'com.android.application'
+apply from: '../versions.gradle'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion build_versions.target_sdk
+    buildToolsVersion build_versions.build_tools
     defaultConfig {
         applicationId "example.powercode.us.redditclonesample"
-        minSdkVersion 16
-        targetSdkVersion 27
+        minSdkVersion build_versions.min_sdk
+        targetSdkVersion build_versions.target_sdk
         versionCode 1
-        versionName "1.0"
+        versionName "0.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+    buildTypes {
+        release {
+            minifyEnabled false
+            // if set true, than read https://stackoverflow.com/a/40189977/3400881 to update proguard configuration
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    dataBinding {
+        enabled true
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -18,10 +35,59 @@ android {
     }
 }
 
+// To follow DRY principle let's move dependencies into separate gradle file
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation deps.crashlytics
+    implementation deps.support.appcompat
+    implementation deps.support.constraint
+    implementation deps.support.recyclerview
+    implementation deps.support.design
+
+    implementation deps.rx.java
+    implementation deps.rx.android
+    implementation deps.rx.rxbinding2.support_v4
+    implementation deps.rx.rxbinding2.appcompat_v7
+    implementation deps.rx.rxbinding2.design
+
+    implementation deps.arch_lifecycle_java
+    implementation deps.arch_lifecycle_extension
+    //    For controlling LiveData background threads in your tests, add:
+    testImplementation deps.arch_core_testing
+    //    implementation deps.room.rxjava2
+    implementation deps.dagger.runtime
+    annotationProcessor deps.dagger.compiler
+    implementation deps.dagger.android_support
+    annotationProcessor deps.dagger.android_support_processor
+    implementation deps.timber
+
+    implementation deps.find_bugs_jsr305
+
+    debugImplementation deps.leak_canary.debug
+    releaseImplementation deps.leak_canary.release
+    testImplementation deps.junit
+    androidTestImplementation deps.atsl.runner
+    androidTestImplementation deps.atsl.rules
+    androidTestImplementation(deps.espresso.core, {
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.google.code.findbugs', module: 'jsr305'
+    })
+
+    androidTestImplementation(deps.espresso.contrib, {
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.google.code.findbugs', module: 'jsr305'
+    })
+    // Ensure the no-op dependency is always used in JVM tests.
+    configurations.all { config ->
+        if (config.name.contains('UnitTest')
+                || config.name.contains('AndroidTest')) {
+            config.resolutionStrategy.eachDependency { details ->
+                if (details.requested.group == 'com.squareup.leakcanary' && details.requested.name == 'leakcanary-android') {
+                    details.useTarget(group: details.requested.group, name: 'leakcanary-android-no-op', version: details.requested.version)
+                }
+            }
+        }
+    }
 }

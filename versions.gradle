@@ -1,0 +1,112 @@
+/**
+ * Shared file between builds so that they can all use the same dependencies and
+ * maven repositories.
+ **/
+ext.deps = [:]
+
+def versions = [:]
+versions.arch_components = '1.1.1'
+versions.dagger = '2.16'
+versions.timber = '4.7.0'
+versions.rxbinding = '2.1.1'
+versions.leak_canary = '1.5.4'
+versions.find_bugs_jsr305 = '3.0.2'
+versions.crashlytics = '2.9.1'
+
+versions.junit = '4.12'
+versions.espresso = '3.0.2'
+versions.runner = '1.0.2'
+
+versions.mockito = '2.7.19'
+versions.mockito_all = '1.10.19'
+
+def packages = [:]
+packages.crashlytics = 'com.crashlytics.sdk'
+packages.support = 'com.android.support'
+packages.android = 'com.google.android'
+packages.dagger = 'com.google.dagger'
+packages.rxjava = 'io.reactivex.rxjava2'
+
+packages.retrofit = 'com.squareup.retrofit2'
+
+packages.find_bugs = 'com.google.code.findbugs'
+packages.leak_canary = 'com.squareup.leakcanary'
+
+packages.arch_prefix = 'android.arch'
+
+packages.test = 'com.android.support.test'
+packages.jwharton_prefix = 'com.jakewharton'
+packages.rxbinding2 = "${packages.jwharton_prefix}.rxbinding2"
+
+packages.espresso = 'com.android.support.test.espresso'
+
+
+def deps = [:]
+
+deps.crashlytics = "${packages.crashlytics}.android:crashlytics:${versions.crashlytics}"
+
+def support = [:]
+support.appcompat = "${packages.support}:appcompat-v7:${versions.support}"
+support.constraint = "${packages.support}.constraint:constraint-layout:1.1.0"
+support.recyclerview = "${packages.support}:recyclerview-v7:${versions.support}"
+
+support.design = "${packages.support}:design:${versions.support}"
+deps.support = support
+
+def dagger = [:]
+dagger.runtime = "${packages.dagger}:dagger:${versions.dagger}"
+dagger.compiler = "${packages.dagger}:dagger-compiler:${versions.dagger}"
+dagger.android_support = "${packages.dagger}:dagger-android-support:${versions.dagger}"
+dagger.android_support_processor = "${packages.dagger}:dagger-android-processor:${versions.dagger}"
+deps.dagger = dagger
+
+def rx = [:]
+rx.java = "${packages.rxjava}:rxjava:2.1.10"
+rx.android = "${packages.rxjava}:rxandroid:2.0.2"
+
+def rxbinding2 = [:]
+rxbinding2.support_v4 = "${packages.rxbinding2}:rxbinding-support-v4:${versions.rxbinding}"
+rxbinding2.appcompat_v7 = "${packages.rxbinding2}:rxbinding-appcompat-v7:${versions.rxbinding}"
+rxbinding2.design = "${packages.rxbinding2}:rxbinding-design:${versions.rxbinding}"
+rx.rxbinding2 = rxbinding2
+deps.rx = rx
+
+deps.find_bugs_jsr305 = "${packages.find_bugs}:jsr305:${versions.find_bugs_jsr305}"
+
+deps.arch_lifecycle_java = "${packages.arch_prefix}.lifecycle:common-java8:${versions.arch_components}"
+deps.arch_core_testing = "${packages.arch_prefix}.core:core-testing:${versions.arch_components}"
+deps.arch_lifecycle_extension = "${packages.arch_prefix}.lifecycle:extensions:${versions.arch_components}"
+//deps.arch_lifecycle_rx_stream = "${packages.arch_prefix}.lifecycle:reactivestreams:${versions.arch_components}"
+
+deps.timber = "${packages.jwharton_prefix}.timber:timber:${versions.timber}"
+
+def leak_canary = [:]
+leak_canary.debug = "${packages.leak_canary}:leakcanary-android:${versions.leak_canary}"
+leak_canary.release = "${packages.leak_canary}:leakcanary-android-no-op:${versions.leak_canary}"
+deps.leak_canary = leak_canary
+
+def espresso = [:]
+espresso.core = "${packages.espresso}:espresso-core:${versions.espresso}"
+espresso.contrib = "${packages.espresso}:espresso-contrib:${versions.espresso}"
+espresso.intents = "${packages.espresso}:espresso-intents:${versions.espresso}"
+deps.espresso = espresso
+
+def atsl = [:]
+atsl.runner = "com.android.support.test:runner:${versions.runner}"
+atsl.rules = "com.android.support.test:rules:${versions.runner}"
+deps.atsl = atsl
+
+def mockito = [:]
+mockito.core = "org.mockito:mockito-core:${versions.mockito}"
+mockito.all = "org.mockito:mockito-all:${versions.mockito_all}"
+deps.mockito = mockito
+
+deps.junit = "junit:junit:${versions.junit}"
+
+ext.deps = deps
+
+def build_versions = [:]
+build_versions.min_sdk = 16
+build_versions.target_sdk = 27
+build_versions.build_tools = "27.0.3"
+ext.build_versions = build_versions
