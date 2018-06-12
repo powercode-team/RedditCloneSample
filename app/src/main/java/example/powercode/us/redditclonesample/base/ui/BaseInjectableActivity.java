@@ -8,7 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import dagger.android.AndroidInjection;
 
 /**
- * Basic activity which supports dependency injection
+ * Performs dependency injection for the given Activity
  */
 public abstract class BaseInjectableActivity extends AppCompatActivity {
     @CallSuper

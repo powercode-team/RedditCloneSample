@@ -6,6 +6,6 @@ import dagger.android.support.AndroidSupportInjectionModule;
 /**
  * Created by dev for RedditCloneSample on 12-Jun-18.
  */
-@Module (includes = {AndroidSupportInjectionModule.class})
+@Module (includes = {AndroidSupportInjectionModule.class, ContributorsModule.class, ViewModelModule.class})
 public interface AppModule {
 }
