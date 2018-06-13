@@ -59,6 +59,7 @@ dependencies {
     implementation deps.arch_lifecycle_extension
 
     //    For controlling LiveData background threads in your tests, add:
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     testImplementation deps.arch_core_testing
     implementation deps.dagger.runtime
     annotationProcessor deps.dagger.compiler

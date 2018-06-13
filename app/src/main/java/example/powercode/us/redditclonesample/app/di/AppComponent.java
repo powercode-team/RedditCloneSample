@@ -1,5 +1,6 @@
 package example.powercode.us.redditclonesample.app.di;
 
+import android.app.Application;
 import android.support.annotation.NonNull;
 
 import dagger.BindsInstance;
@@ -19,6 +20,6 @@ public interface AppComponent extends AndroidInjector<TheApp> {
     @Component.Builder
     abstract class Builder extends AndroidInjector.Builder<TheApp> {
         @BindsInstance
-        public abstract Builder application(@NonNull TheApp app);
+        public abstract Builder application(Application app);
     }
 }

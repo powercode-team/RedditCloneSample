@@ -52,4 +52,8 @@ public final class TheApp extends Application implements HasActivityInjector {
     public AndroidInjector<Activity> activityInjector() {
         return activityInjector;
     }
+
+    public RefWatcher getAppRefWatcher() {
+        return appRefWatcher;
+    }
 }

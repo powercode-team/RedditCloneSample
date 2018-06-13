@@ -8,7 +8,6 @@ import java.lang.annotation.RetentionPolicy;
 import javax.inject.Qualifier;
 
 /**
- * Created by dev for YoungBusinessClub on 28-Feb-18.
  * Qualifier for Activity's FragmentManager {@link FragmentActivity#getSupportFragmentManager()}
  */
 @Qualifier
