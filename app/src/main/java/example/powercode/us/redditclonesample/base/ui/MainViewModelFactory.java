@@ -14,7 +14,6 @@ import example.powercode.us.redditclonesample.app.di.scopes.PerActivity;
 /**
  * Main view-model creator which allows to inject {@link ViewModel} descendants
  */
-@PerActivity
 public class MainViewModelFactory implements ViewModelProvider.Factory {
     private final @NonNull Map<Class<? extends ViewModel>, Provider<ViewModel>> creators_;
 

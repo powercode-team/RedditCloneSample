@@ -62,7 +62,7 @@ deps.crashlytics = "${packages.crashlytics}.android:crashlytics:${versions.crash
 
 def support = [:]
 support.appcompat = "${packages.support}:appcompat-v7:${versions.support}"
-support.constraint = "${packages.support}.constraint:constraint-layout:1.1.0"
+support.constraint = "${packages.support}.constraint:constraint-layout:1.1.2"
 support.recyclerview = "${packages.support}:recyclerview-v7:${versions.support}"
 
 support.design = "${packages.support}:design:${versions.support}"

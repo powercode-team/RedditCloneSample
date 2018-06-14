@@ -1,4 +1,4 @@
-package example.powercode.us.redditclonesample.main;
+package example.powercode.us.redditclonesample.main.vm;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;

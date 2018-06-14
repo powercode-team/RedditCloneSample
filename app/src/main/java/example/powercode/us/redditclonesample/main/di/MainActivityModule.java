@@ -1,26 +1,42 @@
 package example.powercode.us.redditclonesample.main.di;
 
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 
 import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
-import example.powercode.us.redditclonesample.app.di.qualifiers.ParentFragmentManager;
+import dagger.android.ContributesAndroidInjector;
+import example.powercode.us.redditclonesample.R;
+import example.powercode.us.redditclonesample.app.di.qualifiers.FragmentContainerRes;
 import example.powercode.us.redditclonesample.app.di.scopes.PerActivity;
-import example.powercode.us.redditclonesample.base.di.BaseInjectableActivityModule;
+import example.powercode.us.redditclonesample.app.di.scopes.PerFragment;
 import example.powercode.us.redditclonesample.base.di.BaseInjectableFragmentActivityModule;
-import example.powercode.us.redditclonesample.base.ui.BaseInjectableActivity;
 import example.powercode.us.redditclonesample.base.ui.BaseInjectableFragmentActivity;
-import example.powercode.us.redditclonesample.main.MainActivity;
+import example.powercode.us.redditclonesample.main.ui.MainActivity;
+import example.powercode.us.redditclonesample.main.ui.TopicListFragment;
 
 /**
  * Binds activity context
  */
-@Module (includes = {BaseInjectableFragmentActivityModule.class})
+@Module(includes = {BaseInjectableFragmentActivityModule.class})
 public interface MainActivityModule {
     @Binds
     @PerActivity
-    BaseInjectableFragmentActivity bindActivity(final MainActivity activity);
+    BaseInjectableFragmentActivity bindActivity(@NonNull final MainActivity activity);
+
+    @Provides
+    @PerActivity
+    @FragmentContainerRes
+    static @IdRes int provideFragmentContainer() {
+        return R.id.fragment_container;
+    }
+
+    @Binds
+    @PerActivity
+    TopicListFragment.OnInteractionListener bindTopicListFragmentOnInteractionListener(@NonNull final MainActivity activity);
+
+    @ContributesAndroidInjector()
+    @PerFragment
+    TopicListFragment contributeFragmentInjector();
 }

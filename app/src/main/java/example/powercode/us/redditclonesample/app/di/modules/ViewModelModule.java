@@ -9,7 +9,7 @@ import dagger.Module;
 import dagger.multibindings.IntoMap;
 import example.powercode.us.redditclonesample.app.di.mapkey.ViewModelKey;
 import example.powercode.us.redditclonesample.base.ui.MainViewModelFactory;
-import example.powercode.us.redditclonesample.main.MainViewModel;
+import example.powercode.us.redditclonesample.main.vm.MainViewModel;
 
 /**
  * Module to provide view models
