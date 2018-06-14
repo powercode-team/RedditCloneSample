@@ -4,6 +4,16 @@
  **/
 ext.deps = [:]
 
+private static def deepCopy(orig) {
+    OutputStream bos = new ByteArrayOutputStream()
+    ObjectOutputStream oos = new ObjectOutputStream(bos)
+    oos.writeObject(orig)
+    oos.close()
+    InputStream bin = new ByteArrayInputStream(bos.toByteArray())
+    ObjectInputStream ois = new ObjectInputStream(bin)
+    return ois.readObject()
+}
+
 def versions = [:]
 versions.arch_components = '1.1.1'
 versions.dagger = '2.16'
@@ -20,10 +30,15 @@ versions.runner = '1.0.2'
 versions.mockito = '2.7.19'
 versions.mockito_all = '1.10.19'
 
+def firebase = [:]
+firebase.core = '16.0.0'
+versions.firebase = deepCopy(firebase)
+
 def packages = [:]
 packages.crashlytics = 'com.crashlytics.sdk'
 packages.support = 'com.android.support'
 packages.android = 'com.google.android'
+packages.firebase = 'com.google.firebase'
 packages.dagger = 'com.google.dagger'
 packages.rxjava = 'io.reactivex.rxjava2'
 
@@ -52,6 +67,10 @@ support.recyclerview = "${packages.support}:recyclerview-v7:${versions.support}"
 
 support.design = "${packages.support}:design:${versions.support}"
 deps.support = support
+
+firebase.clear()
+firebase.core = "${packages.firebase}:firebase-core:${versions.firebase.core}"
+deps.firebase = firebase
 
 def dagger = [:]
 dagger.runtime = "${packages.dagger}:dagger:${versions.dagger}"

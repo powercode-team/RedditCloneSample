@@ -43,6 +43,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation deps.firebase.core
     implementation deps.crashlytics
     implementation deps.support.appcompat
     implementation deps.support.constraint
