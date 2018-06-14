@@ -5,6 +5,8 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,7 @@ import javax.inject.Inject;
 import example.powercode.us.redditclonesample.R;
 import example.powercode.us.redditclonesample.app.di.qualifiers.ActivityContext;
 import example.powercode.us.redditclonesample.base.ui.common.DefaultTagGenerator;
+import example.powercode.us.redditclonesample.base.ui.common.HasActionBar;
 import example.powercode.us.redditclonesample.base.ui.common.HasFragmentTag;
 import example.powercode.us.redditclonesample.base.ui.fragments.BaseInjectableFragment;
 import example.powercode.us.redditclonesample.databinding.FragmentTopicListBinding;
@@ -93,7 +96,7 @@ public class TopicListFragment extends BaseInjectableFragment implements HasFrag
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnInteractionListener {
+    public interface OnInteractionListener extends HasActionBar<ActionBar, Toolbar> {
         void onCreateNewTopic();
     }
 }
