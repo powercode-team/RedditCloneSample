@@ -11,7 +11,7 @@ versions.timber = '4.7.0'
 versions.rxbinding = '2.1.1'
 versions.leak_canary = '1.5.4'
 versions.find_bugs_jsr305 = '3.0.2'
-versions.crashlytics = '2.9.1'
+versions.crashlytics = '2.9.3'
 
 versions.junit = '4.12'
 versions.espresso = '3.0.2'
