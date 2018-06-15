@@ -1,25 +1,18 @@
 package example.powercode.us.redditclonesample.main.ui;
 
 import android.arch.lifecycle.ViewModelProvider;
-import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
 
 import javax.inject.Inject;
 
 import example.powercode.us.redditclonesample.R;
-import example.powercode.us.redditclonesample.app.di.qualifiers.ActivityContext;
-import example.powercode.us.redditclonesample.app.di.qualifiers.AppContext;
 import example.powercode.us.redditclonesample.base.ui.BaseInjectableFragmentActivity;
-import example.powercode.us.redditclonesample.base.ui.common.HasActionBar;
 import example.powercode.us.redditclonesample.base.vm.ViewModelHelper;
 import example.powercode.us.redditclonesample.databinding.ActivityMainBinding;
 import example.powercode.us.redditclonesample.main.vm.MainViewModel;
 
-public class MainActivity extends BaseInjectableFragmentActivity implements HasActionBar<ActionBar, Toolbar>,
+public class MainActivity extends BaseInjectableFragmentActivity implements
         TopicListFragment.OnInteractionListener {
 
     @Inject
@@ -51,16 +44,6 @@ public class MainActivity extends BaseInjectableFragmentActivity implements HasA
 
         viewModel = null;
         binding = null;
-    }
-
-    @Override
-    public ActionBar getAppBar() {
-        return getSupportActionBar();
-    }
-
-    @Override
-    public void setAppBar(@Nullable Toolbar toolbar) {
-        setSupportActionBar(toolbar);
     }
 
     /*/
