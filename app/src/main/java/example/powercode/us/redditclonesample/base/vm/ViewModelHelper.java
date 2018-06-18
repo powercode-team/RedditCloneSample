@@ -20,4 +20,19 @@ public interface ViewModelHelper {
     static <VM extends ViewModel> VM getViewModel(@NonNull Fragment fragment, @NonNull Class<VM> vmClass, @Nullable ViewModelProvider.Factory factory) {
         return ViewModelProviders.of(fragment, factory).get(vmClass);
     }
+
+    static <VM extends ViewModel> ViewModelProvider.Factory createFor(@NonNull final VM model) {
+        return new ViewModelProvider.Factory() {
+            @SuppressWarnings(value={"unchecked"})
+            @NonNull
+            @Override
+            public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+                if (modelClass.isAssignableFrom(model.getClass())) {
+                    return (T)model;
+                }
+
+                throw new IllegalArgumentException("unknown model class " + modelClass);
+            }
+        };
+    }
 }

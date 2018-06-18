@@ -1,9 +1,11 @@
 package example.powercode.us.redditclonesample.main.ui;
 
+import android.arch.lifecycle.ViewModelProvider;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +18,10 @@ import example.powercode.us.redditclonesample.app.di.qualifiers.ActivityContext;
 import example.powercode.us.redditclonesample.base.ui.common.DefaultTagGenerator;
 import example.powercode.us.redditclonesample.base.ui.common.HasFragmentTag;
 import example.powercode.us.redditclonesample.base.ui.fragments.BaseInjectableFragment;
+import example.powercode.us.redditclonesample.base.ui.fragments.BaseViewModelFragment;
+import example.powercode.us.redditclonesample.base.vm.ViewModelHelper;
 import example.powercode.us.redditclonesample.databinding.FragmentTopicListBinding;
+import example.powercode.us.redditclonesample.main.vm.TopicsViewModel;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,6 +33,11 @@ import example.powercode.us.redditclonesample.databinding.FragmentTopicListBindi
  */
 public class TopicListFragment extends BaseInjectableFragment implements HasFragmentTag {
     public static final String FRAGMENT_TAG = DefaultTagGenerator.generate(TopicListFragment.class);
+
+    @Inject
+    ViewModelProvider.Factory factory;
+
+    private TopicsViewModel viewModel;
 
     @NonNull
     @Override
@@ -81,6 +91,13 @@ public class TopicListFragment extends BaseInjectableFragment implements HasFrag
     public void onDetach() {
         super.onDetach();
         listener = null;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        viewModel = ViewModelHelper.getViewModel(this, TopicsViewModel.class, factory);
     }
 
     /**
