@@ -35,7 +35,7 @@ public class TopicListFragment extends BaseInjectableFragment implements HasFrag
         return FRAGMENT_TAG;
     }
 
-    @Inject @ActivityContext Context c;
+//    @Inject @ActivityContext Context c;
     @Inject OnInteractionListener listener;
 
     private FragmentTopicListBinding binding;

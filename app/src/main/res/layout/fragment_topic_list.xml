@@ -17,7 +17,12 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_topics"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                app:fastScrollEnabled="true"
+                android:orientation="vertical"
+                tools:listitem="@layout/item_topic"
+                />
 
         </android.support.v4.widget.NestedScrollView>
 
