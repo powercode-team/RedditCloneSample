@@ -11,10 +11,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import example.powercode.us.redditclonesample.R;
 import example.powercode.us.redditclonesample.app.di.qualifiers.ActivityContext;
+import example.powercode.us.redditclonesample.base.error.ErrorDataTyped;
 import example.powercode.us.redditclonesample.base.ui.common.DefaultTagGenerator;
 import example.powercode.us.redditclonesample.base.ui.common.HasFragmentTag;
 import example.powercode.us.redditclonesample.base.ui.fragments.BaseInjectableFragment;
@@ -22,6 +25,9 @@ import example.powercode.us.redditclonesample.base.ui.fragments.BaseViewModelFra
 import example.powercode.us.redditclonesample.base.vm.ViewModelHelper;
 import example.powercode.us.redditclonesample.databinding.FragmentTopicListBinding;
 import example.powercode.us.redditclonesample.main.vm.TopicsViewModel;
+import example.powercode.us.redditclonesample.model.TopicEntity;
+import example.powercode.us.redditclonesample.model.common.Resource;
+import example.powercode.us.redditclonesample.model.error.ErrorsTopics;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -31,13 +37,8 @@ import example.powercode.us.redditclonesample.main.vm.TopicsViewModel;
  * Use the {@link TopicListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TopicListFragment extends BaseInjectableFragment implements HasFragmentTag {
+public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> implements HasFragmentTag {
     public static final String FRAGMENT_TAG = DefaultTagGenerator.generate(TopicListFragment.class);
-
-    @Inject
-    ViewModelProvider.Factory factory;
-
-    private TopicsViewModel viewModel;
 
     @NonNull
     @Override
@@ -77,13 +78,20 @@ public class TopicListFragment extends BaseInjectableFragment implements HasFrag
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnInteractionListener) {
-            listener = (OnInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnInteractionListener");
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        viewModel.getTopicsLiveData().observe(this, this::onTopicsFetched);
+    }
+
+    private void onTopicsFetched(@NonNull Resource<List<TopicEntity>, ErrorDataTyped<ErrorsTopics>> resTopics) {
+        switch (resTopics.status) {
+            case SUCCESS:
+                break;
+            case ERROR:
+                break;
+            case LOADING:
+                break;
         }
     }
 
@@ -93,11 +101,15 @@ public class TopicListFragment extends BaseInjectableFragment implements HasFrag
         listener = null;
     }
 
+    @NonNull
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    protected Class<TopicsViewModel> getViewModelClass() {
+        return TopicsViewModel.class;
+    }
 
-        viewModel = ViewModelHelper.getViewModel(this, TopicsViewModel.class, factory);
+    @Override
+    protected void onDetachFromViewModel() {
+        viewModel.getTopicsLiveData().removeObservers(this);
     }
 
     /**
