@@ -33,8 +33,8 @@ public class Resource<T, E> {
 //        this.message = message;
     }
 
-    public static <T, E> Resource<T, E> success(@Nullable T data) {
-        return new Resource<>(Status.SUCCESS, data, /*null,*/ null);
+    public static <T, E> Resource<T, E> success(@Nullable T data, @Nullable E error) {
+        return new Resource<>(Status.SUCCESS, data, /*null,*/ error);
     }
 
     public static <T, E> Resource<T, E> error(/*String msg, */@Nullable E error, @Nullable T data) {

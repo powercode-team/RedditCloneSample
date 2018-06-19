@@ -5,11 +5,11 @@
 
     <data>
 
-        <import type="example.powercode.us.redditclonesample.model.TopicEntity" />
+        <import type="example.powercode.us.redditclonesample.model.entity.TopicEntity" />
 
         <variable
             name="topic"
-            type="TopicEntity" />
+            type="example.powercode.us.redditclonesample.model.entity.TopicEntity" />
     </data>
 
     <android.support.constraint.ConstraintLayout

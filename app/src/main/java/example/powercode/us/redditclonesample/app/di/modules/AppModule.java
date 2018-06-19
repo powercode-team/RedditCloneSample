@@ -13,11 +13,12 @@ import dagger.android.support.AndroidSupportInjectionModule;
 import example.powercode.us.redditclonesample.app.TheApp;
 import example.powercode.us.redditclonesample.app.di.qualifiers.AppContext;
 import example.powercode.us.redditclonesample.app.di.scopes.PerApplication;
+import example.powercode.us.redditclonesample.model.di.ReposModule;
 
 /**
  * Created by dev for RedditCloneSample on 12-Jun-18.
  */
-@Module (includes = {AndroidSupportInjectionModule.class, ContributorsModule.class, ViewModelModule.class})
+@Module (includes = {AndroidSupportInjectionModule.class, ContributorsModule.class, ViewModelModule.class, ReposModule.class})
 public interface AppModule {
     @PerApplication
     @Provides

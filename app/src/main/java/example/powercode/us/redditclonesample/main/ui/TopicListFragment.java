@@ -24,8 +24,8 @@ import example.powercode.us.redditclonesample.base.ui.common.HasFragmentTag;
 import example.powercode.us.redditclonesample.base.ui.fragments.BaseViewModelFragment;
 import example.powercode.us.redditclonesample.databinding.FragmentTopicListBinding;
 import example.powercode.us.redditclonesample.main.vm.TopicsViewModel;
-import example.powercode.us.redditclonesample.model.TopicEntity;
-import example.powercode.us.redditclonesample.model.VoteType;
+import example.powercode.us.redditclonesample.model.entity.TopicEntity;
+import example.powercode.us.redditclonesample.model.entity.VoteType;
 import example.powercode.us.redditclonesample.model.common.Resource;
 import example.powercode.us.redditclonesample.model.error.ErrorsTopics;
 
@@ -104,12 +104,19 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
     private void onTopicsFetched(@NonNull Resource<List<TopicEntity>, ErrorDataTyped<ErrorsTopics>> resTopics) {
         switch (resTopics.status) {
             case SUCCESS: {
+                adapter.submitItems(resTopics.data);
+                break;
+            }
+
+            case ERROR: {
+                adapter.submitItems(null);
+                //TODO: display error
 
                 break;
             }
-            case ERROR:
-                break;
+
             case LOADING:
+                // TODO: display loading
                 break;
         }
     }
