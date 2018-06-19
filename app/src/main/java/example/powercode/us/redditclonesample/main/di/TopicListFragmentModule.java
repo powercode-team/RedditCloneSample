@@ -12,31 +12,19 @@ import example.powercode.us.redditclonesample.app.di.qualifiers.FragmentContaine
 import example.powercode.us.redditclonesample.app.di.scopes.PerActivity;
 import example.powercode.us.redditclonesample.app.di.scopes.PerFragment;
 import example.powercode.us.redditclonesample.base.di.BaseInjectableFragmentActivityModule;
+import example.powercode.us.redditclonesample.base.di.BaseInjectableFragmentModule;
 import example.powercode.us.redditclonesample.base.ui.BaseInjectableFragmentActivity;
+import example.powercode.us.redditclonesample.base.ui.fragments.BaseInjectableFragment;
 import example.powercode.us.redditclonesample.main.ui.MainActivity;
 import example.powercode.us.redditclonesample.main.ui.TopicListFragment;
+import example.powercode.us.redditclonesample.main.ui.TopicsAdapter;
 
 /**
  * Binds activity context
  */
-@Module(includes = {BaseInjectableFragmentActivityModule.class})
-public interface MainActivityModule {
-    @Binds
-    @PerActivity
-    BaseInjectableFragmentActivity bindActivity(@NonNull final MainActivity activity);
-
-    @Provides
-    @PerActivity
-    @FragmentContainerRes
-    static @IdRes int provideFragmentContainer() {
-        return R.id.fragment_container;
-    }
-
-    @Binds
-    @PerActivity
-    TopicListFragment.OnInteractionListener bindTopicListFragmentOnInteractionListener(@NonNull final MainActivity activity);
-
-    @ContributesAndroidInjector(modules = {TopicListFragmentModule.class})
+@Module(includes = {BaseInjectableFragmentModule.class})
+public interface TopicListFragmentModule {
     @PerFragment
-    TopicListFragment contributeFragmentInjector();
+    @Binds
+    TopicsAdapter.InteractionListener bindTopicsAdapterInteractionListener(@NonNull final TopicListFragment fragment);
 }

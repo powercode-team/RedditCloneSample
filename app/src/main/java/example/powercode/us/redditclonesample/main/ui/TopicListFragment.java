@@ -1,12 +1,13 @@
 package example.powercode.us.redditclonesample.main.ui;
 
-import android.arch.lifecycle.ViewModelProvider;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,12 +21,11 @@ import example.powercode.us.redditclonesample.app.di.qualifiers.ActivityContext;
 import example.powercode.us.redditclonesample.base.error.ErrorDataTyped;
 import example.powercode.us.redditclonesample.base.ui.common.DefaultTagGenerator;
 import example.powercode.us.redditclonesample.base.ui.common.HasFragmentTag;
-import example.powercode.us.redditclonesample.base.ui.fragments.BaseInjectableFragment;
 import example.powercode.us.redditclonesample.base.ui.fragments.BaseViewModelFragment;
-import example.powercode.us.redditclonesample.base.vm.ViewModelHelper;
 import example.powercode.us.redditclonesample.databinding.FragmentTopicListBinding;
 import example.powercode.us.redditclonesample.main.vm.TopicsViewModel;
 import example.powercode.us.redditclonesample.model.TopicEntity;
+import example.powercode.us.redditclonesample.model.VoteType;
 import example.powercode.us.redditclonesample.model.common.Resource;
 import example.powercode.us.redditclonesample.model.error.ErrorsTopics;
 
@@ -37,7 +37,8 @@ import example.powercode.us.redditclonesample.model.error.ErrorsTopics;
  * Use the {@link TopicListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> implements HasFragmentTag {
+public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> implements HasFragmentTag,
+        TopicsAdapter.InteractionListener {
     public static final String FRAGMENT_TAG = DefaultTagGenerator.generate(TopicListFragment.class);
 
     @NonNull
@@ -46,8 +47,10 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
         return FRAGMENT_TAG;
     }
 
-//    @Inject @ActivityContext Context c;
+    @Inject @ActivityContext Context c;
     @Inject OnInteractionListener listener;
+
+    @Inject TopicsAdapter adapter;
 
     private FragmentTopicListBinding binding;
 
@@ -78,6 +81,20 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
     }
 
     @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        setupTopicsRecyclerView(adapter, c);
+    }
+
+    private void setupTopicsRecyclerView(@Nullable RecyclerView.Adapter adapter, @NonNull Context context) {
+        binding.rvTopics.addItemDecoration(new DividerItemDecoration(
+                context, DividerItemDecoration.VERTICAL));
+
+        binding.rvTopics.setAdapter(adapter);
+    }
+
+    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
@@ -86,8 +103,10 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
 
     private void onTopicsFetched(@NonNull Resource<List<TopicEntity>, ErrorDataTyped<ErrorsTopics>> resTopics) {
         switch (resTopics.status) {
-            case SUCCESS:
+            case SUCCESS: {
+
                 break;
+            }
             case ERROR:
                 break;
             case LOADING:
@@ -110,6 +129,11 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
     @Override
     protected void onDetachFromViewModel() {
         viewModel.getTopicsLiveData().removeObservers(this);
+    }
+
+    @Override
+    public void onVoteClick(@NonNull View v, int adapterPos, @NonNull VoteType vt) {
+
     }
 
     /**

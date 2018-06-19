@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 
 import dagger.Binds;
 import dagger.Module;
@@ -21,6 +22,12 @@ public interface BaseInjectableActivityModule {
     @ActivityContext
     @Binds
     Context bindActivityContext(final @NonNull AppCompatActivity activity);
+
+    @PerActivity
+    @Provides
+    static LayoutInflater provideInflater(@NonNull @ActivityContext Context c) {
+        return LayoutInflater.from(c);
+    }
 
     @PerActivity
     @Binds
