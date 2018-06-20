@@ -30,8 +30,6 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ItemViewHo
     @NonNull
     private final LayoutInflater inflater;
 
-    private final List<TopicEntity> topics;
-
     private final AsyncListDiffer<TopicEntity> asyncDiffer;
 
     @Nullable
@@ -44,10 +42,9 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ItemViewHo
     @Inject
     TopicsAdapter(@NonNull LayoutInflater inflater, @Nullable InteractionListener listener) {
         this.inflater = inflater;
-        this.topics = Collections.emptyList();
         this.listener = listener;
 
-        this.asyncDiffer = new AsyncListDiffer<TopicEntity>(this, DIFF_CALLBACK);
+        this.asyncDiffer = new AsyncListDiffer<>(this, DIFF_CALLBACK);
     }
 
     @NonNull
@@ -63,11 +60,11 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ItemViewHo
 
     @Override
     public int getItemCount() {
-        return 0;
+        return asyncDiffer.getCurrentList().size();
     }
 
     public TopicEntity getItem(int position) {
-        return topics.get(position);
+        return asyncDiffer.getCurrentList().get(position);
     }
 
     public void submitItems(@Nullable List<TopicEntity> items) {
@@ -78,7 +75,7 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ItemViewHo
     private static final DiffUtil.ItemCallback<TopicEntity> DIFF_CALLBACK = new DiffUtil.ItemCallback<TopicEntity>() {
         @Override
         public boolean areItemsTheSame(TopicEntity oldItem, TopicEntity newItem) {
-            return oldItem.getId().equals(newItem.getId());
+            return oldItem.id == newItem.id;
         }
 
         @Override

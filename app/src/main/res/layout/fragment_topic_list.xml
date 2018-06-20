@@ -8,22 +8,22 @@
         android:layout_height="match_parent"
         tools:context=".main.ui.TopicListFragment">
 
-        <android.support.v4.widget.NestedScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fillViewport="true"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <!--<android.support.v4.widget.NestedScrollView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:fillViewport="true"-->
+            <!--app:layout_behavior="@string/appbar_scrolling_view_behavior">-->
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_topics"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:layoutManager="android.support.v7.widget.LinearLayoutManager"
                 android:orientation="vertical"
-                tools:listitem="@layout/item_topic"
-                />
+                app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                tools:listitem="@layout/item_topic" />
 
-        </android.support.v4.widget.NestedScrollView>
+        <!--</android.support.v4.widget.NestedScrollView>-->
 
         <android.support.design.widget.AppBarLayout
             android:id="@+id/appbar_topics"

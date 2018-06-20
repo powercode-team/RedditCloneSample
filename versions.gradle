@@ -15,6 +15,7 @@ private static def deepCopy(orig) {
 }
 
 def versions = [:]
+versions.support = '27.1.1'
 versions.arch_components = '1.1.1'
 versions.dagger = '2.16'
 versions.timber = '4.7.0'
