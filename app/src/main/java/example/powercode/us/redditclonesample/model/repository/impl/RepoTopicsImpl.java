@@ -1,5 +1,6 @@
 package example.powercode.us.redditclonesample.model.repository.impl;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import example.powercode.us.redditclonesample.base.error.ErrorDataTyped;
 import example.powercode.us.redditclonesample.model.common.Resource;
 import example.powercode.us.redditclonesample.model.common.Status;
 import example.powercode.us.redditclonesample.model.entity.TopicEntity;
+import example.powercode.us.redditclonesample.model.entity.VoteType;
 import example.powercode.us.redditclonesample.model.error.ErrorsTopics;
 import example.powercode.us.redditclonesample.model.repository.RepoTopics;
 import io.reactivex.Single;
@@ -48,6 +50,10 @@ public class RepoTopicsImpl implements RepoTopics {
                 });
     }
 
+    @Override
+    public Single<Resource<TopicEntity, ErrorDataTyped<ErrorsTopics>>> applyVoteToTopic(long id, @NonNull VoteType vt) {
+        return null;
+    }
 
     private static List<TopicEntity> generateItems(int count) {
         if (count <= 0) {

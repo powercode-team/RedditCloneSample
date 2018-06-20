@@ -140,7 +140,8 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
 
     @Override
     public void onVoteClick(@NonNull View v, int adapterPos, @NonNull VoteType vt) {
-
+        final TopicEntity topic = adapter.getItem(adapterPos);
+        viewModel.voteTopic(topic.id, vt);
     }
 
     /**

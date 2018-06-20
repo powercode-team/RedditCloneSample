@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import example.powercode.us.redditclonesample.model.entity.TopicEntity;
 import example.powercode.us.redditclonesample.model.common.Resource;
 import example.powercode.us.redditclonesample.base.error.ErrorDataTyped;
+import example.powercode.us.redditclonesample.model.entity.VoteType;
 import example.powercode.us.redditclonesample.model.error.ErrorsTopics;
 import example.powercode.us.redditclonesample.model.repository.RepoTopics;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -42,6 +43,7 @@ public class TopicsViewModel extends ViewModel {
         compositeDisposable.add( fetchTopics() );
     }
 
+    @NonNull
     private Disposable fetchTopics() {
         return repoTopics
                 .fetchTopics(null, 256)
@@ -64,5 +66,14 @@ public class TopicsViewModel extends ViewModel {
     @NonNull
     public LiveData<Resource<List<TopicEntity>, ErrorDataTyped<ErrorsTopics>>> getTopicsLiveData() {
         return topicsLiveData;
+    }
+
+    public void voteTopic(long id, @NonNull VoteType vt) {
+//        compositeDisposable.add(applyVoteTopic(id, vt));
+    }
+
+    @NonNull
+    private Disposable applyVoteTopic(long id, @NonNull VoteType vt) {
+        return null;
     }
 }
