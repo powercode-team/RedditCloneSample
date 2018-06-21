@@ -3,6 +3,7 @@ package example.powercode.us.redditclonesample.main.ui;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.UiThread;
 import android.support.v7.recyclerview.extensions.AsyncListDiffer;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
@@ -122,6 +123,7 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ItemViewHo
             }
         }
 
+        @UiThread
         @Override
         public void bind(@NonNull TopicEntity t) {
             bindComponent.setTopic(t);

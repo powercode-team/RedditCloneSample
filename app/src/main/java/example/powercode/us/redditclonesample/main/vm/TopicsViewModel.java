@@ -7,12 +7,14 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.v4.util.Pair;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import example.powercode.us.redditclonesample.base.error.ErrorDataTyped;
 import example.powercode.us.redditclonesample.model.common.Resource;
+import example.powercode.us.redditclonesample.model.common.Status;
 import example.powercode.us.redditclonesample.model.entity.EntityActionType;
 import example.powercode.us.redditclonesample.model.entity.TopicEntity;
 import example.powercode.us.redditclonesample.model.entity.VoteType;
@@ -72,6 +74,11 @@ public class TopicsViewModel extends ViewModel {
                     List<TopicEntity> oldValue = topicsLiveData.getValue() != null ? topicsLiveData.getValue().data : null;
                     topicsLiveData.setValue(Resource.loading(oldValue));
                 })
+//                .doOnSuccess(listTopicsResource -> {
+//                    if (listTopicsResource.status == Status.SUCCESS && listTopicsResource.data != null) {
+//                        Timber.d("Fetched array:\n\t%s\n", Arrays.toString(listTopicsResource.data.toArray(new TopicEntity[0])));
+//                    }
+//                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(topicsLiveData::setValue,
                         throwable -> Timber.e(throwable));
