@@ -1,4 +1,4 @@
-package example.powercode.us.redditclonesample.common.java;
+package example.powercode.us.redditclonesample.common.functional;
 
 import java.util.Objects;
 

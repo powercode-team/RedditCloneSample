@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="font_size_topic_rating">16sp</dimen>
+    <dimen name="font_size_topic_rating">14sp</dimen>
     <dimen name="font_size_topic_title">16sp</dimen>
 </resources>

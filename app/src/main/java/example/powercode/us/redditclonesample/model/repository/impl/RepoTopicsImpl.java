@@ -2,25 +2,32 @@ package example.powercode.us.redditclonesample.model.repository.impl;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
-import example.powercode.us.redditclonesample.common.java.Function;
+import example.powercode.us.redditclonesample.common.Algorithms;
+import example.powercode.us.redditclonesample.common.functional.Function;
 
 import javax.inject.Inject;
 
 import example.powercode.us.redditclonesample.app.di.scopes.PerApplication;
 import example.powercode.us.redditclonesample.base.error.ErrorDataTyped;
 import example.powercode.us.redditclonesample.model.common.Resource;
+import example.powercode.us.redditclonesample.model.entity.EntityActionType;
 import example.powercode.us.redditclonesample.model.entity.TopicEntity;
 import example.powercode.us.redditclonesample.model.entity.VoteType;
 import example.powercode.us.redditclonesample.model.error.ErrorsTopics;
 import example.powercode.us.redditclonesample.model.repository.RepoTopics;
+import io.reactivex.Completable;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
 
 /**
  * Created by dev for RedditCloneSample on 19-Jun-18.
@@ -31,6 +38,9 @@ public class RepoTopicsImpl implements RepoTopics {
     // This is just a simulation of data source such as DB
     private List<TopicEntity> originalTopics;
 
+    @NonNull
+    private final PublishSubject<Pair<TopicEntity, EntityActionType>> topicChangeSubject = PublishSubject.create();
+
     private static List<TopicEntity> generateItems(int count, @NonNull Function<? super Integer, ? extends Integer> func) {
         if (count <= 0) {
             return Collections.emptyList();
@@ -39,17 +49,42 @@ public class RepoTopicsImpl implements RepoTopics {
         List<TopicEntity> items = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
             int rating = func.apply(i);
-            items.add(new TopicEntity(i, "Very simple title " + i, rating));
+            items.add(new TopicEntity(1000 + i, "Very simple title " + i, rating));
         }
 
         return items;
+    }
+
+    private static boolean doVoteTopic(@NonNull TopicEntity topic, @NonNull VoteType vt) {
+        switch (vt) {
+            case UP: {
+                if (topic.getRating() < Integer.MAX_VALUE) {
+                    topic.setRating(topic.getRating() + 1);
+                    return true;
+                }
+
+                break;
+            }
+            case DOWN: {
+                if (topic.getRating() > Integer.MIN_VALUE) {
+                    topic.setRating(topic.getRating() - 1);
+                    return true;
+                }
+                break;
+            }
+            default: {
+                throw new NoSuchElementException("Unknown VoteType " + vt);
+            }
+        }
+
+        return false;
     }
 
     private Single<List<TopicEntity>> prepareOriginalTopics(int count) {
         return Single
                 .fromCallable(() -> {
                     if (originalTopics == null) {
-                        originalTopics = generateItems(count, index -> 2*index ^ (index-1));
+                        originalTopics = generateItems(count, index -> 2 * index ^ (index - 1));
                     }
                     return originalTopics;
                 });
@@ -82,7 +117,26 @@ public class RepoTopicsImpl implements RepoTopics {
     }
 
     @Override
-    public Single<Resource<TopicEntity, ErrorDataTyped<ErrorsTopics>>> applyVoteToTopic(long id, @NonNull VoteType vt) {
-        return null;
+    public Single<Boolean> applyVoteToTopic(long id, @NonNull VoteType vt) {
+        return Single
+                .fromCallable(() -> {
+                    TopicEntity targetTopic = Algorithms.findElement(originalTopics, topicEntity -> topicEntity.id == id);
+                    if (targetTopic == null) {
+                        return false;
+                    }
+
+                    boolean isApplied = doVoteTopic(targetTopic, vt);
+                    if (isApplied) {
+                        topicChangeSubject.onNext(new Pair<>(new TopicEntity(targetTopic), EntityActionType.UPDATED));
+                    }
+
+                    return isApplied;
+                })
+                .subscribeOn(Schedulers.computation());
+    }
+
+    @Override
+    public Observable<Pair<TopicEntity, EntityActionType>> onTopicChangeObservable() {
+        return topicChangeSubject.hide();
     }
 }

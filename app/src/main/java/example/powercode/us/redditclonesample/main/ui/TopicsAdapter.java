@@ -19,6 +19,8 @@ import javax.inject.Inject;
 import example.powercode.us.redditclonesample.R;
 import example.powercode.us.redditclonesample.base.ui.CanBind;
 import example.powercode.us.redditclonesample.base.ui.DataBindingViewHolder;
+import example.powercode.us.redditclonesample.common.Algorithms;
+import example.powercode.us.redditclonesample.common.functional.Predicate;
 import example.powercode.us.redditclonesample.databinding.ItemTopicBinding;
 import example.powercode.us.redditclonesample.model.entity.TopicEntity;
 import example.powercode.us.redditclonesample.model.entity.VoteType;
@@ -58,17 +60,25 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ItemViewHo
         holder.bind(getItem(position));
     }
 
+    private List<TopicEntity> getItems() {
+        return asyncDiffer.getCurrentList();
+    }
+
     @Override
     public int getItemCount() {
-        return asyncDiffer.getCurrentList().size();
+        return getItems().size();
     }
 
     public TopicEntity getItem(int position) {
-        return asyncDiffer.getCurrentList().get(position);
+        return getItems().get(position);
     }
 
     public void submitItems(@Nullable List<TopicEntity> items) {
         asyncDiffer.submitList(items);
+    }
+
+    public int findItemPosition(@NonNull Predicate<? super TopicEntity> condition) {
+        return Algorithms.findIndex(getItems(), condition);
     }
 
     @NonNull

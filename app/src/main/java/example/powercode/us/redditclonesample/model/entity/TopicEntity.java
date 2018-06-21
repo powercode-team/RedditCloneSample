@@ -25,6 +25,10 @@ public class TopicEntity implements HasId<Long> {
         this(id, title, 0);
     }
 
+    public TopicEntity(@NonNull TopicEntity other) {
+        this(other.id, other.title, other.rating);
+    }
+
     public int getRating() {
         return rating;
     }

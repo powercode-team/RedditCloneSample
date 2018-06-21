@@ -1,5 +1,6 @@
 package example.powercode.us.redditclonesample.main.ui;
 
+import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -12,7 +13,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import junit.framework.Assert;
+
 import java.util.List;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -98,10 +102,10 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        viewModel.getTopicsLiveData().observe(this, this::onTopicsFetched);
+        viewModel.getTopicsLiveData().observe(this, this::onTopicsFetchedObserver);
     }
 
-    private void onTopicsFetched(@NonNull Resource<List<TopicEntity>, ErrorDataTyped<ErrorsTopics>> resTopics) {
+    private void onTopicsFetchedObserver(@NonNull Resource<List<TopicEntity>, ErrorDataTyped<ErrorsTopics>> resTopics) {
         switch (resTopics.status) {
             case SUCCESS: {
                 adapter.submitItems(resTopics.data);
@@ -136,12 +140,42 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
     @Override
     protected void onDetachFromViewModel() {
         viewModel.getTopicsLiveData().removeObservers(this);
+        viewModel.getApplyVoteLiveData().removeObservers(this);
     }
 
     @Override
     public void onVoteClick(@NonNull View v, int adapterPos, @NonNull VoteType vt) {
         final TopicEntity topic = adapter.getItem(adapterPos);
+        viewModel.getApplyVoteLiveData().observe(this, voteTopicObserver);
         viewModel.voteTopic(topic.id, vt);
+    }
+
+    @NonNull
+    private final Observer<Resource<Long, ErrorDataTyped<ErrorsTopics>>> voteTopicObserver = this::onApplyVoteObserver;
+
+    private void onApplyVoteObserver(@NonNull Resource<Long, ErrorDataTyped<ErrorsTopics>> votedTopicIdResource) {
+        switch (votedTopicIdResource.status) {
+            case SUCCESS: {
+                viewModel.getApplyVoteLiveData().removeObserver(voteTopicObserver);
+
+                Objects.requireNonNull(votedTopicIdResource.data, "Status.SUCCESS implies data to be set");
+
+                //TODO: Remove and make databinding observable
+                final long updatedItemId = votedTopicIdResource.data;
+                int updatedItemPosition = adapter.findItemPosition(topicEntity -> updatedItemId == topicEntity.id);
+                if (updatedItemPosition != RecyclerView.NO_POSITION) {
+                    adapter.notifyItemChanged(updatedItemPosition);
+                }
+
+                break;
+            }
+            case ERROR: {
+                viewModel.getApplyVoteLiveData().removeObserver(voteTopicObserver);
+                break;
+            }
+            case LOADING:
+                break;
+        }
     }
 
     /**
