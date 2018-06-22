@@ -11,7 +11,7 @@ import example.powercode.us.redditclonesample.model.entity.TopicEntity;
  * Business rules
  */
 public class BRulesTopics {
-    public static final int TOPICS_COUNT_WORKING_SET = 6;
+    public static final int TOPICS_COUNT_WORKING_SET = 20;
 
     @NonNull
     public static final Comparator<? super TopicEntity> TOPICS_LIST_COMPARATOR = (topicEntity1, topicEntity2) ->
