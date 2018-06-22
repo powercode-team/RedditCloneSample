@@ -101,26 +101,25 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ItemViewHo
 
         ItemViewHolder(@NonNull ItemTopicBinding binding, @Nullable InteractionListener l) {
             super(binding);
+            listener = l;
 
-            assignListener(l);
+            assignListener();
         }
 
-        private void assignListener(@Nullable InteractionListener l) {
-            if (listener != l) {
-                listener = l;
+        private void assignListener() {
+//            if (listener != l) {
+            bindComponent.topicRateUp.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onVoteClick(bindComponent.topicRateUp, getAdapterPosition(), VoteType.UP);
+                }
+            });
 
-                bindComponent.topicRateUp.setOnClickListener(v -> {
-                    if (listener != null) {
-                        listener.onVoteClick(bindComponent.topicRateUp, getAdapterPosition(), VoteType.UP);
-                    }
-                });
-
-                bindComponent.topicRateDown.setOnClickListener(v -> {
-                    if (listener != null) {
-                        listener.onVoteClick(bindComponent.topicRateDown, getAdapterPosition(), VoteType.DOWN);
-                    }
-                });
-            }
+            bindComponent.topicRateDown.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onVoteClick(bindComponent.topicRateDown, getAdapterPosition(), VoteType.DOWN);
+                }
+            });
+//            }
         }
 
         @UiThread

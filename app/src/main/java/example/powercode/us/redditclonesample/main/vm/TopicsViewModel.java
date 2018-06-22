@@ -5,14 +5,17 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
 import example.powercode.us.redditclonesample.base.error.ErrorDataTyped;
+import example.powercode.us.redditclonesample.common.arch.SingleLiveEvent;
 import example.powercode.us.redditclonesample.model.common.Resource;
 import example.powercode.us.redditclonesample.model.common.Status;
 import example.powercode.us.redditclonesample.model.entity.EntityActionType;
@@ -35,12 +38,14 @@ public class TopicsViewModel extends ViewModel {
     private final MutableLiveData<Resource<List<TopicEntity>, ErrorDataTyped<ErrorsTopics>>> topicsLiveData = new MutableLiveData<>();
 
     @NonNull
-    private final MutableLiveData<Resource<Long, ErrorDataTyped<ErrorsTopics>>> itemChangedLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Resource<Long, ErrorDataTyped<ErrorsTopics>>> itemChangedLiveData = new SingleLiveEvent<>();
 
     @NonNull
     private final RepoTopics repoTopics;
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    @Nullable
+    private Disposable disposableApplyVote = null;
 
     @Inject
     TopicsViewModel(@NonNull RepoTopics repoTopics) {
@@ -84,16 +89,22 @@ public class TopicsViewModel extends ViewModel {
                         throwable -> Timber.e(throwable));
     }
 
-    public void refreshTopics() {
+    private void refreshTopics() {
         compositeDisposable.add(fetchTopics(BRulesTopics.TOPICS_COUNT_WORKING_SET));
     }
 
     @Override
     protected void onCleared() {
         super.onCleared();
-        compositeDisposable.dispose();
+        clearDisposable(compositeDisposable);
 
         Timber.d("VM of type [ %s ] was cleared \nid %s", TopicsViewModel.class.getSimpleName(), this);
+    }
+
+    private void clearDisposable(@Nullable Disposable d) {
+        if (d != null && !d.isDisposed()) {
+            d.dispose();
+        }
     }
 
     @NonNull
@@ -102,7 +113,8 @@ public class TopicsViewModel extends ViewModel {
     }
 
     public void voteTopic(long id, @NonNull VoteType vt) {
-        compositeDisposable.add(applyVoteTopic(id, vt));
+        clearDisposable(disposableApplyVote);
+        disposableApplyVote = applyVoteTopic(id, vt);
     }
 
     @NonNull
@@ -112,10 +124,11 @@ public class TopicsViewModel extends ViewModel {
                 .doOnSubscribe(disposable -> {
                     itemChangedLiveData.setValue(Resource.loading(id));
                 })
-                .subscribe(isApplied -> {
+                .subscribe(resultAppliedVote -> {
 //                    Timber.d("Vote applied with result: %b", isApplied);
-                    if (isApplied) {
-                        itemChangedLiveData.setValue(Resource.success(id, null));
+                    Objects.requireNonNull(resultAppliedVote.second);
+                    if (resultAppliedVote.second) {
+                        itemChangedLiveData.setValue(Resource.success(resultAppliedVote.first, null));
                     }
                 }, throwable -> Timber.e(throwable));
     }

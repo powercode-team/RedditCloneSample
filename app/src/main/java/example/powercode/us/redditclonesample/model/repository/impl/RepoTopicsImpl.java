@@ -117,12 +117,12 @@ public class RepoTopicsImpl implements RepoTopics {
     }
 
     @Override
-    public Single<Boolean> applyVoteToTopic(long id, @NonNull VoteType vt) {
+    public Single<Pair<Long, Boolean>> applyVoteToTopic(final long id, @NonNull VoteType vt) {
         return Single
                 .fromCallable(() -> {
                     TopicEntity targetTopic = Algorithms.findElement(originalTopics, topicEntity -> topicEntity.id == id);
                     if (targetTopic == null) {
-                        return false;
+                        return new Pair<>(id, false);
                     }
 
                     boolean isApplied = doVoteTopic(targetTopic, vt);
@@ -130,7 +130,7 @@ public class RepoTopicsImpl implements RepoTopics {
                         topicChangeSubject.onNext(new Pair<>(new TopicEntity(targetTopic), EntityActionType.UPDATED));
                     }
 
-                    return isApplied;
+                    return new Pair<>(targetTopic.getId(), isApplied);
                 })
                 .subscribeOn(Schedulers.computation());
     }

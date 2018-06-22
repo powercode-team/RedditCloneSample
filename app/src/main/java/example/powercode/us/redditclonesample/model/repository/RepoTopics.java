@@ -22,7 +22,7 @@ import io.reactivex.Single;
  */
 public interface RepoTopics {
     Single<Resource<List<TopicEntity>, ErrorDataTyped<ErrorsTopics>>> fetchTopics(@Nullable Comparator<? super TopicEntity> sortCmp, int count);
-    Single<Boolean> applyVoteToTopic(long id, @NonNull VoteType vt);
+    Single<Pair<Long, Boolean>> applyVoteToTopic(long id, @NonNull VoteType vt);
 
     Observable<Pair<TopicEntity, EntityActionType>> onTopicChangeObservable();
 }

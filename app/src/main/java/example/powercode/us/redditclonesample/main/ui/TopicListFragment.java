@@ -151,32 +151,33 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
     }
 
     @NonNull
-    private final Observer<Resource<Long, ErrorDataTyped<ErrorsTopics>>> voteTopicObserver = this::onApplyVoteObserver;
+    private final Observer<Resource<Long, ErrorDataTyped<ErrorsTopics>>> voteTopicObserver = new Observer<Resource<Long, ErrorDataTyped<ErrorsTopics>>>() {
+        @Override
+        public void onChanged(@Nullable Resource<Long, ErrorDataTyped<ErrorsTopics>> votedTopicIdResource) {
+            Objects.requireNonNull(votedTopicIdResource);
+            switch (votedTopicIdResource.status) {
+                case SUCCESS: {
+                    viewModel.getApplyVoteLiveData().removeObserver(voteTopicObserver);
 
-    private void onApplyVoteObserver(@NonNull Resource<Long, ErrorDataTyped<ErrorsTopics>> votedTopicIdResource) {
-        switch (votedTopicIdResource.status) {
-            case SUCCESS: {
-                viewModel.getApplyVoteLiveData().removeObserver(voteTopicObserver);
+                    Objects.requireNonNull(votedTopicIdResource.data, "Status.SUCCESS implies data to be set");
 
-                Objects.requireNonNull(votedTopicIdResource.data, "Status.SUCCESS implies data to be set");
+                    final long updatedItemId = votedTopicIdResource.data;
+                    int updatedItemPosition = adapter.findItemPosition(topicEntity -> updatedItemId == topicEntity.id);
+                    if (updatedItemPosition != RecyclerView.NO_POSITION) {
+                        adapter.notifyItemChanged(updatedItemPosition);
+                    }
 
-                //TODO: Remove and make databinding observable
-                final long updatedItemId = votedTopicIdResource.data;
-                int updatedItemPosition = adapter.findItemPosition(topicEntity -> updatedItemId == topicEntity.id);
-                if (updatedItemPosition != RecyclerView.NO_POSITION) {
-                    adapter.notifyItemChanged(updatedItemPosition);
+                    break;
                 }
-
-                break;
+                case ERROR: {
+                    viewModel.getApplyVoteLiveData().removeObserver(voteTopicObserver);
+                    break;
+                }
+                case LOADING:
+                    break;
             }
-            case ERROR: {
-                viewModel.getApplyVoteLiveData().removeObserver(voteTopicObserver);
-                break;
-            }
-            case LOADING:
-                break;
         }
-    }
+    };
 
     /**
      * This interface must be implemented by activities that contain this
