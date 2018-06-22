@@ -1,6 +1,7 @@
 package example.powercode.us.redditclonesample.main.ui;
 
 import android.databinding.DataBindingUtil;
+import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
@@ -10,8 +11,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,6 +23,7 @@ import example.powercode.us.redditclonesample.base.ui.CanBind;
 import example.powercode.us.redditclonesample.base.ui.DataBindingViewHolder;
 import example.powercode.us.redditclonesample.common.Algorithms;
 import example.powercode.us.redditclonesample.common.functional.Predicate;
+import example.powercode.us.redditclonesample.databinding.ItemTopicSwipableBinding;
 import example.powercode.us.redditclonesample.databinding.ItemTopicBinding;
 import example.powercode.us.redditclonesample.model.entity.TopicEntity;
 import example.powercode.us.redditclonesample.model.entity.VoteType;
@@ -53,7 +55,7 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ItemViewHo
     @NonNull
     @Override
     public ItemViewHolder onCreateViewHolder(@Nullable ViewGroup parent, int viewType) {
-        return new ItemViewHolder(DataBindingUtil.inflate(inflater, R.layout.item_topic, parent, false), listener);
+        return new ItemViewHolder(DataBindingUtil.inflate(inflater, R.layout.item_topic_swipable, parent, false), listener);
     }
 
     @Override
@@ -95,28 +97,41 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ItemViewHo
         }
     };
 
-    static class ItemViewHolder extends DataBindingViewHolder<ItemTopicBinding> implements CanBind<TopicEntity> {
+    static class ItemViewHolder extends DataBindingViewHolder<ItemTopicSwipableBinding> implements CanBind<TopicEntity> {
         @Nullable
         private InteractionListener listener;
+        private final ItemTopicBinding foreground;
+        private final TextView background;
 
-        ItemViewHolder(@NonNull ItemTopicBinding binding, @Nullable InteractionListener l) {
+        ItemViewHolder(@NonNull ItemTopicSwipableBinding binding, @Nullable InteractionListener l) {
             super(binding);
             listener = l;
+
+            foreground = binding.viewForeground;
+            background = binding.viewBackground;
 
             assignListener();
         }
 
+        public ItemTopicBinding getForeground() {
+            return foreground;
+        }
+
+        public TextView getBackground() {
+            return background;
+        }
+
         private void assignListener() {
 //            if (listener != l) {
-            bindComponent.topicRateUp.setOnClickListener(v -> {
+            bindComponent.viewForeground.topicRateUp.setOnClickListener(v -> {
                 if (listener != null) {
-                    listener.onVoteClick(bindComponent.topicRateUp, getAdapterPosition(), VoteType.UP);
+                    listener.onVoteClick(foreground.topicRateUp, getAdapterPosition(), VoteType.UP);
                 }
             });
 
-            bindComponent.topicRateDown.setOnClickListener(v -> {
+            foreground.topicRateDown.setOnClickListener(v -> {
                 if (listener != null) {
-                    listener.onVoteClick(bindComponent.topicRateDown, getAdapterPosition(), VoteType.DOWN);
+                    listener.onVoteClick(foreground.topicRateDown, getAdapterPosition(), VoteType.DOWN);
                 }
             });
 //            }

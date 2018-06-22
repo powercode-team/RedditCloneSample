@@ -9,6 +9,7 @@ import android.view.View;
  * Created by dev for RedditCloneSample on 19-Jun-18.
  */
 public abstract class DataBindingViewHolder<DataBinding extends ViewDataBinding> extends RecyclerView.ViewHolder {
+    @NonNull
     protected DataBinding bindComponent;
 
     public DataBindingViewHolder(@NonNull DataBinding b) {

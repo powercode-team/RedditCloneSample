@@ -7,8 +7,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,14 +90,22 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setupTopicsRecyclerView(adapter, c);
+        setupTopicsRecyclerView(adapter,
+                new DividerItemDecoration(c, DividerItemDecoration.VERTICAL),
+                new DefaultItemAnimator(),
+                new TopicsTouchHelper(0, ItemTouchHelper.LEFT, swipeInteractionListener)
+                );
     }
 
-    private void setupTopicsRecyclerView(@Nullable RecyclerView.Adapter adapter, @NonNull Context context) {
-        binding.rvTopics.addItemDecoration(new DividerItemDecoration(
-                context, DividerItemDecoration.VERTICAL));
+    private void setupTopicsRecyclerView(@Nullable RecyclerView.Adapter adapter,
+                                         @NonNull DividerItemDecoration dividerDecoration,
+                                         @NonNull RecyclerView.ItemAnimator itemAnimator,
+                                         @NonNull ItemTouchHelper.Callback callback) {
+        binding.rvTopics.setItemAnimator(itemAnimator);
+        binding.rvTopics.addItemDecoration(dividerDecoration);
 
         binding.rvTopics.setAdapter(adapter);
+        new ItemTouchHelper(callback).attachToRecyclerView(binding.rvTopics);
     }
 
     @Override
@@ -176,6 +186,19 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
                 case LOADING:
                     break;
             }
+        }
+    };
+
+    @NonNull
+    private final TopicsTouchHelper.InteractionListener<RecyclerView, TopicsAdapter.ItemViewHolder> swipeInteractionListener = new TopicsTouchHelper.InteractionListener<RecyclerView, TopicsAdapter.ItemViewHolder>() {
+        @Override
+        public void onSwiped(TopicsAdapter.ItemViewHolder viewHolder, int direction, int position) {
+
+        }
+
+        @Override
+        public boolean onMove(RecyclerView recyclerView, TopicsAdapter.ItemViewHolder viewHolder, TopicsAdapter.ItemViewHolder target) {
+            return false;
         }
     };
 

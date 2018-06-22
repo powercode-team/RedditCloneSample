@@ -19,6 +19,7 @@
         android:paddingBottom="8dp"
         android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
         android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+        android:background="@color/almostWhite"
         android:paddingTop="8dp">
 
         <android.support.constraint.Guideline
