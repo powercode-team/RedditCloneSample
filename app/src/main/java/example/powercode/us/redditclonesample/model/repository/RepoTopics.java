@@ -21,8 +21,13 @@ import io.reactivex.Single;
  * Created by dev for RedditCloneSample on 19-Jun-18.
  */
 public interface RepoTopics {
+    @NonNull
     Single<Resource<List<TopicEntity>, ErrorDataTyped<ErrorsTopics>>> fetchTopics(@Nullable Comparator<? super TopicEntity> sortCmp, int count);
+    @NonNull
     Single<Pair<Long, Boolean>> applyVoteToTopic(long id, @NonNull VoteType vt);
+    @NonNull
+    Single<Pair<Long, Boolean>> removeTopic(long id);
 
+    @NonNull
     Observable<Pair<TopicEntity, EntityActionType>> onTopicChangeObservable();
 }

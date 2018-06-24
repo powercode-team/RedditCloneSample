@@ -13,14 +13,14 @@ import example.powercode.us.redditclonesample.common.rv.GenericItemTouchHelperSi
 public final class TopicsTouchHelper extends GenericItemTouchHelperSimpleCallback<RecyclerView, TopicsAdapter.ItemViewHolder> {
 
     public interface InteractionListener<RV extends RecyclerView, VH extends RecyclerView.ViewHolder> {
-        void onSwiped(VH viewHolder, int direction, int position);
+        void onSwiped(VH viewHolder, int direction);
         boolean onMove(RV recyclerView, VH viewHolder, VH target);
     }
 
     @NonNull
     private final InteractionListener<RecyclerView, TopicsAdapter.ItemViewHolder> listener;
 
-    public TopicsTouchHelper(int dragDirs, int swipeDirs, @NonNull InteractionListener<RecyclerView, TopicsAdapter.ItemViewHolder> listener) {
+    TopicsTouchHelper(int dragDirs, int swipeDirs, @NonNull InteractionListener<RecyclerView, TopicsAdapter.ItemViewHolder> listener) {
         super(dragDirs, swipeDirs);
         this.listener = listener;
     }
@@ -32,7 +32,7 @@ public final class TopicsTouchHelper extends GenericItemTouchHelperSimpleCallbac
 
     @Override
     public void onSwipedCallback(TopicsAdapter.ItemViewHolder viewHolder, int direction) {
-        listener.onSwiped(viewHolder, direction, viewHolder.getAdapterPosition());
+        listener.onSwiped(viewHolder, direction);
     }
 
     @Override

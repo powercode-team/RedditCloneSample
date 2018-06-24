@@ -1,5 +1,6 @@
 package example.powercode.us.redditclonesample.main.vm;
 
+import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
@@ -14,6 +15,7 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
+import example.powercode.us.redditclonesample.R;
 import example.powercode.us.redditclonesample.base.error.ErrorDataTyped;
 import example.powercode.us.redditclonesample.common.arch.SingleLiveEvent;
 import example.powercode.us.redditclonesample.model.common.Resource;
@@ -41,17 +43,26 @@ public class TopicsViewModel extends ViewModel {
     private final MutableLiveData<Resource<Long, ErrorDataTyped<ErrorsTopics>>> itemChangedLiveData = new SingleLiveEvent<>();
 
     @NonNull
+    private final MutableLiveData<Resource<Long, ErrorDataTyped<ErrorsTopics>>> itemRemovedLiveData = new SingleLiveEvent<>();
+
+    @NonNull
+    private final Application app;
+
+    @NonNull
     private final RepoTopics repoTopics;
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     @Nullable
     private Disposable disposableApplyVote = null;
 
-    @Inject
-    TopicsViewModel(@NonNull RepoTopics repoTopics) {
-        Timber.d("VM of type [ %s ] constructor called \nid %s", TopicsViewModel.class.getSimpleName(), this);
+    @Nullable
+    private Disposable disposableRemoveTopic = null;
 
+    @Inject
+    TopicsViewModel(@NonNull Application app, @NonNull RepoTopics repoTopics) {
+        this.app = app;
         this.repoTopics = repoTopics;
+        Timber.d("VM of type [ %s ] constructor called \nid %s", TopicsViewModel.class.getSimpleName(), this);
 
         topicsLiveData.setValue(Resource.loading(null));
 
@@ -61,18 +72,18 @@ public class TopicsViewModel extends ViewModel {
     }
 
     private void subscribeToTopicChanges(@NonNull Observable<Pair<TopicEntity, EntityActionType>> topicChangesObservable) {
-        compositeDisposable.add( topicChangesObservable
+        compositeDisposable.add(topicChangesObservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(topicChanges -> {
 //                    if (topicChanges.second == EntityActionType.INSERTED
 //                            || topicChanges.second == EntityActionType.DELETED) {
-                        refreshTopics();
+                    refreshTopics();
 //                    }
                 }, Timber::e));
     }
 
     @NonNull
-    private Disposable fetchTopics(@IntRange(from = 0, to=Integer.MAX_VALUE) int count) {
+    private Disposable fetchTopics(@IntRange(from = 0, to = Integer.MAX_VALUE) int count) {
         return repoTopics
                 .fetchTopics(BRulesTopics.TOPICS_LIST_COMPARATOR, count)
                 .doOnSubscribe(disposable -> {
@@ -119,7 +130,8 @@ public class TopicsViewModel extends ViewModel {
 
     @NonNull
     private Disposable applyVoteTopic(long id, @NonNull VoteType vt) {
-        return repoTopics.applyVoteToTopic(id, vt)
+        return repoTopics
+                .applyVoteToTopic(id, vt)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(disposable -> {
                     itemChangedLiveData.setValue(Resource.loading(id));
@@ -129,6 +141,16 @@ public class TopicsViewModel extends ViewModel {
                     Objects.requireNonNull(resultAppliedVote.second);
                     if (resultAppliedVote.second) {
                         itemChangedLiveData.setValue(Resource.success(resultAppliedVote.first, null));
+                    } else {
+                        itemChangedLiveData.setValue(
+                                Resource.error(
+                                        new ErrorDataTyped<>(app
+                                                .getResources()
+                                                .getString(R.string.error_topic_with_id_not_found, resultAppliedVote.first),
+                                                ErrorsTopics.NO_ITEM),
+                                        resultAppliedVote.first
+                                )
+                        );
                     }
                 }, throwable -> Timber.e(throwable));
     }
@@ -136,5 +158,40 @@ public class TopicsViewModel extends ViewModel {
     @NonNull
     public LiveData<Resource<Long, ErrorDataTyped<ErrorsTopics>>> getApplyVoteLiveData() {
         return itemChangedLiveData;
+    }
+
+    public void deleteTopic(long id) {
+        clearDisposable(disposableRemoveTopic);
+        disposableRemoveTopic = removeTopic(id);
+    }
+
+    private Disposable removeTopic(long id) {
+        return repoTopics
+                .removeTopic(id)
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(disposable -> {
+                    itemRemovedLiveData.setValue(Resource.loading(id));
+                })
+                .subscribe(resultRemovedTopic -> {
+                    Objects.requireNonNull(resultRemovedTopic.second);
+                    if (resultRemovedTopic.second) {
+                        itemRemovedLiveData.setValue(Resource.success(resultRemovedTopic.first, null));
+                    } else {
+                        itemRemovedLiveData.setValue(
+                                Resource.error(
+                                        new ErrorDataTyped<>(app
+                                                .getResources()
+                                                .getString(R.string.error_topic_with_id_not_found, resultRemovedTopic.first),
+                                                ErrorsTopics.NO_ITEM),
+                                        resultRemovedTopic.first
+                                )
+                        );
+                    }
+                }, throwable -> Timber.e(throwable));
+    }
+
+    @NonNull
+    public LiveData<Resource<Long, ErrorDataTyped<ErrorsTopics>>> getDeleteTopicLiveData() {
+        return itemRemovedLiveData;
     }
 }

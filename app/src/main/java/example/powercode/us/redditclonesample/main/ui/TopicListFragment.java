@@ -15,8 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import junit.framework.Assert;
-
 import java.util.List;
 import java.util.Objects;
 
@@ -151,6 +149,7 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
     protected void onDetachFromViewModel() {
         viewModel.getTopicsLiveData().removeObservers(this);
         viewModel.getApplyVoteLiveData().removeObservers(this);
+        viewModel.getDeleteTopicLiveData().removeObservers(this);
     }
 
     @Override
@@ -167,7 +166,7 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
             Objects.requireNonNull(votedTopicIdResource);
             switch (votedTopicIdResource.status) {
                 case SUCCESS: {
-                    viewModel.getApplyVoteLiveData().removeObserver(voteTopicObserver);
+                    viewModel.getApplyVoteLiveData().removeObserver(this);
 
                     Objects.requireNonNull(votedTopicIdResource.data, "Status.SUCCESS implies data to be set");
 
@@ -180,7 +179,7 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
                     break;
                 }
                 case ERROR: {
-                    viewModel.getApplyVoteLiveData().removeObserver(voteTopicObserver);
+                    viewModel.getApplyVoteLiveData().removeObserver(this);
                     break;
                 }
                 case LOADING:
@@ -192,13 +191,42 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
     @NonNull
     private final TopicsTouchHelper.InteractionListener<RecyclerView, TopicsAdapter.ItemViewHolder> swipeInteractionListener = new TopicsTouchHelper.InteractionListener<RecyclerView, TopicsAdapter.ItemViewHolder>() {
         @Override
-        public void onSwiped(TopicsAdapter.ItemViewHolder viewHolder, int direction, int position) {
-
+        public void onSwiped(TopicsAdapter.ItemViewHolder viewHolder, int direction) {
+            TopicEntity topicToDelete = adapter.getItem(viewHolder.getAdapterPosition());
+            viewModel.getDeleteTopicLiveData().observe(TopicListFragment.this, deleteTopicObserver);
+            viewModel.deleteTopic(topicToDelete.id);
         }
 
         @Override
         public boolean onMove(RecyclerView recyclerView, TopicsAdapter.ItemViewHolder viewHolder, TopicsAdapter.ItemViewHolder target) {
             return false;
+        }
+    };
+
+    @NonNull
+    private final Observer<Resource<Long, ErrorDataTyped<ErrorsTopics>>> deleteTopicObserver = new Observer<Resource<Long, ErrorDataTyped<ErrorsTopics>>>() {
+        @Override
+        public void onChanged(@Nullable Resource<Long, ErrorDataTyped<ErrorsTopics>> deleteTopicIdResource) {
+            Objects.requireNonNull(deleteTopicIdResource);
+            switch (deleteTopicIdResource.status) {
+                case SUCCESS: {
+                    viewModel.getDeleteTopicLiveData().removeObserver(this);
+                    // Do nothing since notify changes will trigger update
+
+                    break;
+                }
+                case ERROR: {
+                    viewModel.getDeleteTopicLiveData().removeObserver(this);
+                    Objects.requireNonNull(deleteTopicIdResource.data, "Status.SUCCESS implies data to be set");
+                    final long failedDeleteItemId = deleteTopicIdResource.data;
+                    int failedDeleteItemPosition = adapter.findItemPosition(topicEntity -> failedDeleteItemId == topicEntity.id);
+                    adapter.notifyItemChanged(failedDeleteItemPosition);
+
+                    break;
+                }
+                case LOADING:
+                    break;
+            }
         }
     };
 

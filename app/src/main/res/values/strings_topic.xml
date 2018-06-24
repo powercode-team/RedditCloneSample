@@ -6,4 +6,6 @@
     <string name="title_rating">Rating</string>
 
     <string name="action_delete">Delete</string>
+
+    <string name="error_topic_with_id_not_found">Topic with id %1$d\nwas not found</string>
 </resources>

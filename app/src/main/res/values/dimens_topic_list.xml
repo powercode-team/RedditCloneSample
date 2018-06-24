@@ -4,5 +4,8 @@
     <dimen name="font_size_topic_title">16sp</dimen>
     <dimen name="font_size_topic_delete">18sp</dimen>
 
+    <dimen name="padding_16">16dp</dimen>
+
     <dimen name="padding_horizontal_item_topic">8dp</dimen>
+    <dimen name="padding_drawable_item_delete">@dimen/padding_16</dimen>
 </resources>

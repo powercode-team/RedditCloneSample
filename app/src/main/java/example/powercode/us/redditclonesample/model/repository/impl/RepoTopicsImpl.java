@@ -95,6 +95,7 @@ public class RepoTopicsImpl implements RepoTopics {
     RepoTopicsImpl() {
     }
 
+    @NonNull
     @Override
     public Single<Resource<List<TopicEntity>, ErrorDataTyped<ErrorsTopics>>> fetchTopics(@Nullable Comparator<? super TopicEntity> sortCmp, int count) {
         return prepareOriginalTopics(TOPICS_COUNT)
@@ -116,6 +117,7 @@ public class RepoTopicsImpl implements RepoTopics {
                 });
     }
 
+    @NonNull
     @Override
     public Single<Pair<Long, Boolean>> applyVoteToTopic(final long id, @NonNull VoteType vt) {
         return Single
@@ -135,6 +137,28 @@ public class RepoTopicsImpl implements RepoTopics {
                 .subscribeOn(Schedulers.computation());
     }
 
+    @NonNull
+    @Override
+    public Single<Pair<Long, Boolean>> removeTopic(long id) {
+        return Single
+                .fromCallable(() -> {
+                    TopicEntity targetTopic =
+                            Algorithms.findElement(originalTopics, topicEntity -> topicEntity.id == id);
+
+                    if (targetTopic == null) {
+                        return new Pair<>(id, false);
+                    }
+
+                    boolean isRemoved = originalTopics.remove(targetTopic);
+                    if (isRemoved) {
+                        topicChangeSubject.onNext(new Pair<>(new TopicEntity(targetTopic), EntityActionType.DELETED));
+                    }
+                    return new Pair<>(id, isRemoved);
+                })
+                .subscribeOn(Schedulers.computation());
+    }
+
+    @NonNull
     @Override
     public Observable<Pair<TopicEntity, EntityActionType>> onTopicChangeObservable() {
         return topicChangeSubject.hide();
