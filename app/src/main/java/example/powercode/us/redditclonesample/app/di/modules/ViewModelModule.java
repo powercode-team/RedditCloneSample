@@ -10,6 +10,7 @@ import dagger.multibindings.IntoMap;
 import example.powercode.us.redditclonesample.app.di.mapkey.ViewModelKey;
 import example.powercode.us.redditclonesample.base.ui.MainViewModelFactory;
 import example.powercode.us.redditclonesample.main.vm.MainViewModel;
+import example.powercode.us.redditclonesample.main.vm.TopicCreateViewModel;
 import example.powercode.us.redditclonesample.main.vm.TopicsViewModel;
 
 /**
@@ -25,4 +26,7 @@ public interface ViewModelModule {
 
     @Binds @IntoMap @ViewModelKey(TopicsViewModel.class)
     ViewModel bindTopicsViewModel(@NonNull TopicsViewModel viewModel);
+
+    @Binds @IntoMap @ViewModelKey(TopicCreateViewModel.class)
+    ViewModel bindTopicCreateViewModel(@NonNull TopicCreateViewModel viewModel);
 }

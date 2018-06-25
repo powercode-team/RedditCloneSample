@@ -11,9 +11,10 @@ import example.powercode.us.redditclonesample.R;
 import example.powercode.us.redditclonesample.base.ui.BaseViewModelFragmentActivity;
 import example.powercode.us.redditclonesample.databinding.ActivityMainBinding;
 import example.powercode.us.redditclonesample.main.vm.MainViewModel;
+import timber.log.Timber;
 
 public class MainActivity extends BaseViewModelFragmentActivity<MainViewModel> implements
-        TopicListFragment.OnInteractionListener {
+        TopicListFragment.OnInteractionListener, TopicCreateFragment.OnInteractionListener {
 
     @Inject
     ViewModelProvider.Factory vmFactory;
@@ -71,6 +72,15 @@ public class MainActivity extends BaseViewModelFragmentActivity<MainViewModel> i
      */
     @Override
     public void onCreateNewTopic() {
+        localNavigator.putTopicCreateFragment(true, null);
+    }
 
+    /**
+     * Implementation of {@link TopicCreateFragment.OnInteractionListener}
+     */
+    @Override
+    public void onTopicCreated(long newTopicId) {
+        Timber.d("Created topic with id: %d", newTopicId);
+        localNavigator.popBackStack();
     }
 }

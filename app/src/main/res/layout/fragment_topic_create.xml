@@ -6,22 +6,13 @@
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".main.ui.TopicListFragment">
+        tools:context=".main.ui.TopicCreateFragment">
 
         <!--<android.support.v4.widget.NestedScrollView-->
             <!--android:layout_width="match_parent"-->
             <!--android:layout_height="match_parent"-->
             <!--android:fillViewport="true"-->
             <!--app:layout_behavior="@string/appbar_scrolling_view_behavior">-->
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv_topics"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                tools:listitem="@layout/item_topic" />
 
         <!--</android.support.v4.widget.NestedScrollView>-->
 
@@ -36,22 +27,10 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"
                 android:elevation="4dp"
-                app:layout_scrollFlags="scroll"
                 android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
 
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
         </android.support.design.widget.AppBarLayout>
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab_topic_create"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_add_white_24dp"
-            app:layout_anchor="@id/rv_topics"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:layout_anchorGravity="bottom|end"
-            android:layout_marginEnd="@dimen/padding_16"
-            android:layout_marginBottom="@dimen/padding_16"
-            />
     </android.support.design.widget.CoordinatorLayout>
 </layout>

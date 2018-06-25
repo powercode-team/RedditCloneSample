@@ -15,6 +15,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.jakewharton.rxbinding2.support.design.widget.RxFloatingActionButton;
+import com.jakewharton.rxbinding2.view.RxView;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -32,6 +35,7 @@ import example.powercode.us.redditclonesample.model.entity.TopicEntity;
 import example.powercode.us.redditclonesample.model.entity.VoteType;
 import example.powercode.us.redditclonesample.model.common.Resource;
 import example.powercode.us.redditclonesample.model.error.ErrorsTopics;
+import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -51,12 +55,18 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
         return FRAGMENT_TAG;
     }
 
-    @Inject @ActivityContext Context c;
-    @Inject OnInteractionListener listener;
+    @Inject
+    @ActivityContext
+    Context c;
+    @Inject
+    OnInteractionListener listener;
 
-    @Inject TopicsAdapter adapter;
+    @Inject
+    TopicsAdapter adapter;
 
     private FragmentTopicListBinding binding;
+
+    private CompositeDisposable uiInputDisposable;
 
     public TopicListFragment() {
         // Required empty public constructor
@@ -92,7 +102,19 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
                 new DividerItemDecoration(c, DividerItemDecoration.VERTICAL),
                 new DefaultItemAnimator(),
                 new TopicsTouchHelper(0, ItemTouchHelper.LEFT, swipeInteractionListener)
-                );
+        );
+
+        uiInputDisposable = new CompositeDisposable();
+        assignListeners(uiInputDisposable);
+
+    }
+
+    private void assignListeners(@NonNull CompositeDisposable uiInputDisposable) {
+        uiInputDisposable.add(
+                RxView.clicks(binding.fabTopicCreate)
+//                        .takeUntil(RxView.detaches(binding.fabTopicCreate))
+                        .subscribe(o -> listener.onCreateNewTopic())
+        );
     }
 
     private void setupTopicsRecyclerView(@Nullable RecyclerView.Adapter adapter,
@@ -131,6 +153,12 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
                 // TODO: display loading
                 break;
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        uiInputDisposable.dispose();
     }
 
     @Override
