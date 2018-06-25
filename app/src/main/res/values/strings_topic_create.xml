@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="title_topic">Topic title</string>
+    <string name="title_initial_rating">Initial rating</string>
+    <string name="hint_initial_rating">integer value</string>
+    <!--<string name="hint_initial_rating">-2000000000 &lt;= r &lt;= 2000000000</string>-->
+    <string name="button_create">Create</string>
 </resources>

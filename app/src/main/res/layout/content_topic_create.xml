@@ -2,27 +2,96 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="@dimen/padding_16"
-        >
+        android:padding="@dimen/padding_16">
+
+        <Button
+            android:id="@+id/topic_new_abort"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:text="@android:string/cancel"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/topic_new_create"
+            app:layout_constraintHorizontal_bias="1"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/topic_new_create"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_create"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/topic_new_abort" />
+
+        <android.support.constraint.Barrier
+            android:id="@+id/barrier_buttons_top"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="top"
+            app:constraint_referenced_ids="topic_new_abort,topic_new_create" />
 
         <android.support.design.widget.TextInputLayout
+            android:id="@+id/til_topic_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             android:hint="@string/title_topic"
-            >
+            app:layout_constraintBottom_toTopOf="@+id/input_initial_rating"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <android.support.design.widget.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:text="Hello world"
-                android:maxLines="2"
-                />
+                android:inputType="textMultiLine|textAutoComplete"
+                android:maxLines="@integer/max_lines_topic_title"
+                tools:text="Hello world" />
         </android.support.design.widget.TextInputLayout>
+
+        <TextView
+            android:id="@+id/title_initial_rating"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginEnd="@dimen/padding_16"
+            android:gravity="center_vertical"
+            android:text="@string/title_initial_rating"
+            android:textSize="@dimen/font_size_topic_rating"
+            app:layout_constraintBottom_toBottomOf="@+id/input_initial_rating"
+            app:layout_constraintEnd_toStartOf="@+id/input_initial_rating"
+            app:layout_constraintHorizontal_bias="1"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/input_initial_rating" />
+
+        <EditText
+            android:id="@+id/input_initial_rating"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_initial_rating"
+            android:inputType="number"
+            android:minEms="10"
+            android:textSize="@dimen/font_size_topic_rating"
+            app:layout_constraintBottom_toTopOf="@id/barrier_buttons_top"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/title_initial_rating"
+            app:layout_constraintTop_toBottomOf="@+id/til_topic_title" />
+
+
+        <!--<android.support.constraint.Barrier-->
+        <!--android:id="@+id/barrier_rating_top"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--app:barrierDirection="top"-->
+        <!--app:constraint_referenced_ids="title_initial_rating,input_initial_rating"-->
+        <!--app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--app:layout_constraintTop_toBottomOf="@id/til_topic_title" />-->
     </android.support.constraint.ConstraintLayout>
 </layout>
