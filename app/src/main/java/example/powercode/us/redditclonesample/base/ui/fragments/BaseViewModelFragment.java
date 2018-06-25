@@ -2,14 +2,13 @@ package example.powercode.us.redditclonesample.base.ui.fragments;
 
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
 import javax.inject.Inject;
-
-import example.powercode.us.redditclonesample.base.vm.ViewModelHelper;
 
 /**
  * Basic fragment which supports dependency injection
@@ -27,10 +26,7 @@ public abstract class BaseViewModelFragment<VM extends ViewModel> extends BaseIn
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        viewModel = ViewModelHelper.getViewModel(this, getViewModelClass(), factory);
-
-//        ViewModelProvider.Factory viewModelFactory = ViewModelHelper.createFor(viewModel);
-//        ViewModelProviders.of(this, viewModelFactory).get(viewModel.getClass());
+        viewModel = ViewModelProviders.of(this, factory).get(getViewModelClass());
     }
 
     @Override

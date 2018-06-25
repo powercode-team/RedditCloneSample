@@ -3,6 +3,7 @@
     <string name="content_description_title">Picture for group</string>
     <string name="content_description_thumb_up">Press to up-vote</string>
     <string name="content_description_thumb_down">Press to down-vote</string>
+    <string name="content_description_swipe_horizontal">Swipe to remove</string>
     <string name="title_rating">Rating</string>
 
     <string name="action_delete">Delete</string>

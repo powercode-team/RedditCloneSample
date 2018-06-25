@@ -3,35 +3,30 @@ package example.powercode.us.redditclonesample.main.ui;
 import android.arch.lifecycle.ViewModelProvider;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
 import example.powercode.us.redditclonesample.R;
-import example.powercode.us.redditclonesample.base.ui.BaseInjectableFragmentActivity;
-import example.powercode.us.redditclonesample.base.vm.ViewModelHelper;
+import example.powercode.us.redditclonesample.base.ui.BaseViewModelFragmentActivity;
 import example.powercode.us.redditclonesample.databinding.ActivityMainBinding;
 import example.powercode.us.redditclonesample.main.vm.MainViewModel;
 
-public class MainActivity extends BaseInjectableFragmentActivity implements
+public class MainActivity extends BaseViewModelFragmentActivity<MainViewModel> implements
         TopicListFragment.OnInteractionListener {
 
     @Inject
     ViewModelProvider.Factory vmFactory;
-
-    private MainViewModel viewModel;
 
     private ActivityMainBinding binding;
 
     @Inject
     LocalNavigator localNavigator;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-
-        viewModel = ViewModelHelper.getViewModel(this, MainViewModel.class, vmFactory);
 
         if (savedInstanceState == null) {
             localNavigator.putTopicsFragment();
@@ -42,8 +37,18 @@ public class MainActivity extends BaseInjectableFragmentActivity implements
     protected void onDestroy() {
         super.onDestroy();
 
-        viewModel = null;
         binding = null;
+    }
+
+    @NonNull
+    @Override
+    protected Class<MainViewModel> getViewModelClass() {
+        return MainViewModel.class;
+    }
+
+    @Override
+    protected void onDetachFromViewModel() {
+
     }
 
     /*/
