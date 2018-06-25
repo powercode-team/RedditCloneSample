@@ -8,13 +8,17 @@
         android:layout_height="match_parent"
         tools:context=".main.ui.TopicCreateFragment">
 
-        <!--<android.support.v4.widget.NestedScrollView-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:fillViewport="true"-->
-            <!--app:layout_behavior="@string/appbar_scrolling_view_behavior">-->
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!--</android.support.v4.widget.NestedScrollView>-->
+            <include layout="@layout/content_topic_create"
+                android:id="@+id/root_topic_create"
+                />
+
+        </android.support.v4.widget.NestedScrollView>
 
         <android.support.design.widget.AppBarLayout
             android:id="@+id/appbar_topics"
