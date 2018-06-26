@@ -3,6 +3,7 @@ package example.powercode.us.redditclonesample.main.ui;
 import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.databinding.ObservableInt;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.jakewharton.rxbinding2.support.design.widget.RxFloatingActionButton;
 import com.jakewharton.rxbinding2.view.RxView;
 
 import java.util.List;
@@ -32,9 +32,9 @@ import example.powercode.us.redditclonesample.base.ui.fragments.BaseViewModelFra
 import example.powercode.us.redditclonesample.base.vm.ViewModelAttachHelper;
 import example.powercode.us.redditclonesample.databinding.FragmentTopicListBinding;
 import example.powercode.us.redditclonesample.main.vm.TopicsViewModel;
+import example.powercode.us.redditclonesample.model.common.Resource;
 import example.powercode.us.redditclonesample.model.entity.TopicEntity;
 import example.powercode.us.redditclonesample.model.entity.VoteType;
-import example.powercode.us.redditclonesample.model.common.Resource;
 import example.powercode.us.redditclonesample.model.error.ErrorsTopics;
 import io.reactivex.disposables.CompositeDisposable;
 
@@ -69,6 +69,9 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
 
     private CompositeDisposable uiInputDisposable;
 
+    @NonNull
+    private final ObservableInt topicsCount = new ObservableInt(0);
+
     public TopicListFragment() {
         // Required empty public constructor
     }
@@ -91,6 +94,7 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_topic_list, container, false);
+        binding.setItemsCount(topicsCount);
 
         return binding.getRoot();
     }
@@ -107,7 +111,6 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
 
         uiInputDisposable = new CompositeDisposable();
         assignListeners(uiInputDisposable);
-
     }
 
     private void assignListeners(@NonNull CompositeDisposable uiInputDisposable) {
@@ -133,12 +136,15 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
         switch (resTopics.status) {
             case SUCCESS: {
                 adapter.submitItems(resTopics.data);
+                final int safeItemsCount = resTopics.data != null ? resTopics.data.size() : 0;
+                topicsCount.set(safeItemsCount);
+
                 break;
             }
 
             case ERROR: {
                 adapter.submitItems(null);
-                //TODO: display error
+                topicsCount.set(-1);
 
                 break;
             }

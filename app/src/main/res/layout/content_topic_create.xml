@@ -40,10 +40,11 @@
 
         <ImageView
             android:id="@+id/topic_image"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
             android:contentDescription="@string/content_description_topic_picture"
             android:src="@drawable/topic_picture"
+            app:layout_constraintHeight_percent="0.3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

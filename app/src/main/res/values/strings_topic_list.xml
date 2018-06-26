@@ -6,6 +6,8 @@
     <string name="content_description_swipe_horizontal">Swipe to remove</string>
     <string name="title_rating">Rating</string>
 
+    <string name="title_topic_list">Top topics</string>
+
     <string name="action_delete">Delete</string>
 
     <string name="error_topic_with_id_not_found">Topic with id %1$d\nwas not found</string>

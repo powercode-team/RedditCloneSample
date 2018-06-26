@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.databinding.ObservableInt" />
+
+        <import type="android.view.View" />
+
+        <variable
+            name="itemsCount"
+            type="ObservableInt" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:maxLines="1"
+            android:text="@string/title_topic_list"
+            android:textColor="@android:color/primary_text_dark"
+            app:autoSizeMaxTextSize="@dimen/font_size_toolbar_title"
+            app:autoSizeMinTextSize="@dimen/font_size_toolbar_title_min"
+            app:autoSizeTextType="uniform" />
+
+        <TextView
+            android:layout_width="@dimen/width_items_count"
+            android:layout_height="@dimen/width_items_count"
+            android:background="@drawable/shape_rect_topics_count"
+            android:gravity="center"
+            android:layout_gravity="center_vertical"
+            android:paddingTop="@dimen/padding_vertical_topics_count"
+            android:paddingBottom="@dimen/padding_vertical_topics_count"
+            android:paddingLeft="@dimen/padding_horizontal_topics_count"
+            android:paddingRight="@dimen/padding_horizontal_topics_count"
+            android:text="@{String.valueOf(itemsCount)}"
+            android:textColor="@android:color/primary_text_dark"
+            android:visibility="@{itemsCount > 0 ? View.VISIBLE : View.INVISIBLE}"
+            app:autoSizeMaxTextSize="@dimen/font_size_topic_title"
+            app:autoSizeMinTextSize="10sp"
+            app:autoSizeTextType="uniform"
+            android:maxLines="1"
+            tools:text="34" />
+    </LinearLayout>
+</layout>

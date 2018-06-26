@@ -21,8 +21,9 @@
             android:layout_height="match_parent"
             android:text="@string/title_topic_create"
             android:textColor="@android:color/primary_text_dark"
-            android:gravity="center_vertical"
+            android:gravity="center"
             android:textSize="@dimen/font_size_toolbar_title"
+            android:layout_marginEnd="48dp"
             />
     </LinearLayout>
 </layout>

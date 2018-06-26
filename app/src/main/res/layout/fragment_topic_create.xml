@@ -36,9 +36,9 @@
                 app:contentInsetStart="0dp"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
-                <include layout="@layout/toolbar_topic_create"
+                <include
                     android:id="@+id/toolbar_content"
-                    />
+                    layout="@layout/toolbar_topic_create" />
             </android.support.v7.widget.Toolbar>
         </android.support.design.widget.AppBarLayout>
 
