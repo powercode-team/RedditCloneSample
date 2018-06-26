@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">RedditCloneSample</string>
+
+    <string name="content_description_action_back">Press to navigate back</string>
 </resources>

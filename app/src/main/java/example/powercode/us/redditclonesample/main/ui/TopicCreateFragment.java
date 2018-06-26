@@ -113,6 +113,12 @@ public class TopicCreateFragment extends BaseViewModelFragment<TopicCreateViewMo
                             viewModel.newTopic(paramsHolder.topicTitle, paramsHolder.topicRating);
                         })
         );
+
+        uiInputDisposable.add(
+                RxView.clicks(binding.toolbarContent.actionBack)
+                .takeUntil(RxView.detaches(binding.toolbarContent.actionBack))
+                .subscribe(o -> listener.onTopicCreateCancelled())
+        );
     }
 
     private Maybe<ParamsHolder> validateTopicCreateParams(@NonNull Predicate<String> titleValidator,

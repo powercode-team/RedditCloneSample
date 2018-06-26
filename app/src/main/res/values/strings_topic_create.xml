@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="title_topic_create">Create topic</string>
     <string name="title_topic">Topic title</string>
     <string name="title_initial_rating">Initial rating</string>
     <string name="hint_initial_rating">integer value</string>
