@@ -1,41 +1,38 @@
 package example.powercode.us.redditclonesample.main.ui;
 
 import android.arch.lifecycle.Observer;
-import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.jakewharton.rxbinding2.view.RxView;
 
-import java.util.List;
 import java.util.Objects;
 
 import javax.inject.Inject;
 
 import example.powercode.us.redditclonesample.R;
-import example.powercode.us.redditclonesample.app.di.qualifiers.ActivityContext;
 import example.powercode.us.redditclonesample.base.error.ErrorDataTyped;
 import example.powercode.us.redditclonesample.base.ui.common.DefaultTagGenerator;
 import example.powercode.us.redditclonesample.base.ui.common.HasFragmentTag;
 import example.powercode.us.redditclonesample.base.ui.fragments.BaseViewModelFragment;
+import example.powercode.us.redditclonesample.base.vm.ViewModelAttachHelper;
+import example.powercode.us.redditclonesample.common.ParamPredicate;
+import example.powercode.us.redditclonesample.common.functional.Predicate;
 import example.powercode.us.redditclonesample.databinding.FragmentTopicCreateBinding;
-import example.powercode.us.redditclonesample.databinding.FragmentTopicListBinding;
 import example.powercode.us.redditclonesample.main.vm.TopicCreateViewModel;
-import example.powercode.us.redditclonesample.main.vm.TopicsViewModel;
 import example.powercode.us.redditclonesample.model.common.Resource;
-import example.powercode.us.redditclonesample.model.entity.TopicEntity;
-import example.powercode.us.redditclonesample.model.entity.VoteType;
 import example.powercode.us.redditclonesample.model.error.ErrorsTopics;
+import example.powercode.us.redditclonesample.model.rules.BRulesTopics;
+import example.powercode.us.redditclonesample.utils.UserInputUtils;
+import io.reactivex.Maybe;
+import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 
 /**
@@ -93,27 +90,98 @@ public class TopicCreateFragment extends BaseViewModelFragment<TopicCreateViewMo
         super.onViewCreated(view, savedInstanceState);
 
         uiInputDisposable = new CompositeDisposable();
-
+        assignListeners(uiInputDisposable);
     }
 
-    private void onTopicsFetchedObserver(@NonNull Resource<List<TopicEntity>, ErrorDataTyped<ErrorsTopics>> resTopics) {
-        switch (resTopics.status) {
-            case SUCCESS: {
-                listener.onTopicCreated(0);
-                break;
+    private void assignListeners(@NonNull CompositeDisposable uiInputDisposable) {
+        uiInputDisposable.add(
+                RxView
+                        .clicks(binding.rootTopicCreate.topicNewAbort)
+                        .takeUntil(RxView.detaches(binding.rootTopicCreate.topicNewAbort))
+                        .subscribe(o -> listener.onTopicCreateCancelled())
+        );
+
+        uiInputDisposable.add(
+                RxView
+                        .clicks(binding.rootTopicCreate.topicNewCreate)
+                        .takeUntil(RxView.detaches(binding.rootTopicCreate.topicNewCreate))
+                        .flatMapMaybe(o ->
+                                validateTopicCreateParams(BRulesTopics::isTitleValid,
+                                        new RatingPredicate(getResources().getInteger(R.integer.topic_rating_abs_limit))))
+                        .subscribe(paramsHolder -> {
+                            viewModel.getCreateTopicLiveData().observe(this, createTopicObserver);
+                            viewModel.newTopic(paramsHolder.topicTitle, paramsHolder.topicRating);
+                        })
+        );
+    }
+
+    private Maybe<ParamsHolder> validateTopicCreateParams(@NonNull Predicate<String> titleValidator,
+                                                          @NonNull ParamPredicate<Integer> ratingValidator) {
+        return formatInputParams(binding.rootTopicCreate.inputTitle,
+                                            binding.rootTopicCreate.inputInitialRating)
+        .filter(paramsHolder -> validateTopicTitle(paramsHolder.topicTitle, titleValidator, binding.rootTopicCreate.inputTitle)
+                && validateTopicRating(paramsHolder.topicRating, ratingValidator, binding.rootTopicCreate.inputInitialRating));
+    }
+
+    @NonNull
+    private static Single<ParamsHolder> formatInputParams(@NonNull EditText inputTitle, @NonNull EditText inputInitialRating) {
+        return Single.fromCallable(() -> {
+            final String titleCleaned = UserInputUtils.removeDuplicateSpaces(inputTitle.getText().toString().trim());
+            int initialRating = Integer.MIN_VALUE;
+            try {
+                initialRating = Integer.parseInt(inputInitialRating.getText().toString());
+            }
+            catch (NumberFormatException ignored) {
             }
 
-            case ERROR: {
-                //TODO: display error
+            return new ParamsHolder(titleCleaned, initialRating);
+        });
+    }
 
-                break;
-            }
-
-            case LOADING:
-                // TODO: display loading
-                break;
+    private boolean validateTopicTitle(String topicTitle, @NonNull Predicate<String> titleValidator, @NonNull EditText uiControl) {
+        if (titleValidator.test(topicTitle)) {
+            return true;
         }
+
+        uiControl.setError(getText(R.string.error_topic_title_invalid));
+
+        return false;
     }
+
+    private boolean validateTopicRating(int topicRating, @NonNull ParamPredicate<Integer> ratingValidator, @NonNull EditText uiControl) {
+        if (ratingValidator.test(topicRating)) {
+            return true;
+        }
+
+        uiControl.setError(getString(R.string.error_topic_rating_is_out_bound, ratingValidator.param, ratingValidator.param));
+
+        return false;
+    }
+
+    @NonNull
+    private final Observer<Resource<Long, ErrorDataTyped<ErrorsTopics>>> createTopicObserver = new Observer<Resource<Long, ErrorDataTyped<ErrorsTopics>>>() {
+        @Override
+        public void onChanged(@Nullable Resource<Long, ErrorDataTyped<ErrorsTopics>> createdTopicIdResource) {
+            Objects.requireNonNull(createdTopicIdResource);
+            switch (createdTopicIdResource.status) {
+                case SUCCESS: {
+                    viewModel.getCreateTopicLiveData().removeObserver(this);
+
+                    Objects.requireNonNull(createdTopicIdResource.data, "Status.SUCCESS implies data to be set");
+
+                    listener.onTopicCreated(createdTopicIdResource.data);
+
+                    break;
+                }
+                case ERROR: {
+                    viewModel.getCreateTopicLiveData().removeObserver(this);
+                    break;
+                }
+                case LOADING:
+                    break;
+            }
+        }
+    };
 
     @Override
     public void onDestroyView() {
@@ -134,7 +202,12 @@ public class TopicCreateFragment extends BaseViewModelFragment<TopicCreateViewMo
     }
 
     @Override
-    protected void onDetachFromViewModel() {
+    protected void onAttachViewModel() {
+        ViewModelAttachHelper.attachObserverIfLoading(viewModel.getCreateTopicLiveData(), this, createTopicObserver);
+    }
+
+    @Override
+    protected void onDetachViewModel() {
         viewModel.getCreateTopicLiveData().removeObservers(this);
     }
 
@@ -150,5 +223,28 @@ public class TopicCreateFragment extends BaseViewModelFragment<TopicCreateViewMo
      */
     public interface OnInteractionListener {
         void onTopicCreated(long newTopicId);
+
+        void onTopicCreateCancelled();
+    }
+
+    private static final class ParamsHolder {
+        final String topicTitle;
+        final int topicRating;
+
+        ParamsHolder(String topicTitle, int topicRating) {
+            this.topicTitle = topicTitle;
+            this.topicRating = topicRating;
+        }
+    }
+
+    private static class RatingPredicate extends ParamPredicate<Integer> {
+        RatingPredicate(@NonNull Integer limit) {
+            super(limit);
+        }
+
+        @Override
+        public boolean test(Integer rating) {
+            return BRulesTopics.isRatingValid(rating, param);
+        }
     }
 }

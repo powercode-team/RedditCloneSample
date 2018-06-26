@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.support.v4.app.Fragment;
 
 import javax.inject.Inject;
 
@@ -27,20 +28,29 @@ public abstract class BaseViewModelFragment<VM extends ViewModel> extends BaseIn
         super.onActivityCreated(savedInstanceState);
 
         viewModel = ViewModelProviders.of(this, factory).get(getViewModelClass());
+        onAttachViewModel();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
 
-        onDetachFromViewModel();
+        onDetachViewModel();
         viewModel = null;
     }
 
     @NonNull
     protected abstract Class<VM> getViewModelClass();
 
-    protected abstract void onDetachFromViewModel();
+    /**
+     * Called when viewModel has been attached to Fragment see {@link Fragment#onActivityCreated(Bundle)}
+     */
+    protected abstract void onAttachViewModel();
+
+    /**
+     * Called when viewModel is about to be detached from the Fragment {@link Fragment#onDestroyView()}
+     */
+    protected abstract void onDetachViewModel();
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public void setViewModel(@NonNull VM viewModel) {

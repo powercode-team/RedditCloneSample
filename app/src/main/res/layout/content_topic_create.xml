@@ -10,7 +10,6 @@
 
         <Button
             android:id="@+id/topic_new_abort"
-            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="32dp"
@@ -23,13 +22,14 @@
 
         <Button
             android:id="@+id/topic_new_create"
-            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/button_create"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/topic_new_abort" />
+            app:layout_constraintStart_toEndOf="@id/topic_new_abort"
+            android:enabled="@{(inputTitle.text.length() > 0) &amp;&amp; (inputInitialRating.text.length() > 0)}"
+            />
 
         <android.support.constraint.Barrier
             android:id="@+id/barrier_buttons_top"
@@ -37,6 +37,17 @@
             android:layout_height="wrap_content"
             app:barrierDirection="top"
             app:constraint_referenced_ids="topic_new_abort,topic_new_create" />
+
+        <ImageView
+            android:id="@+id/topic_image"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/content_description_topic_picture"
+            android:src="@drawable/topic_picture"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/til_topic_title"
@@ -46,9 +57,10 @@
             app:layout_constraintBottom_toTopOf="@+id/input_initial_rating"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/topic_image">
 
             <android.support.design.widget.TextInputEditText
+                android:id="@+id/input_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textMultiLine|textAutoComplete"
@@ -63,7 +75,7 @@
             android:layout_marginEnd="@dimen/padding_16"
             android:gravity="center_vertical"
             android:text="@string/title_initial_rating"
-            android:textSize="@dimen/font_size_topic_rating"
+            android:textSize="@dimen/font_size_topic_create"
             app:layout_constraintBottom_toBottomOf="@+id/input_initial_rating"
             app:layout_constraintEnd_toStartOf="@+id/input_initial_rating"
             app:layout_constraintHorizontal_bias="1"
@@ -76,9 +88,11 @@
             android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:hint="@string/hint_initial_rating"
-            android:inputType="number"
-            android:minEms="10"
-            android:textSize="@dimen/font_size_topic_rating"
+            android:inputType="numberSigned"
+            android:ems="@integer/topic_max_rating_digits"
+            android:text="@string/default_rating_as_string"
+            android:textSize="@dimen/font_size_topic_create"
+            android:maxLength="@integer/topic_max_rating_digits"
             app:layout_constraintBottom_toTopOf="@id/barrier_buttons_top"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/title_initial_rating"

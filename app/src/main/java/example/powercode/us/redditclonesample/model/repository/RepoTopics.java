@@ -26,6 +26,8 @@ public interface RepoTopics {
     @NonNull
     Single<Pair<Long, Boolean>> applyVoteToTopic(long id, @NonNull VoteType vt);
     @NonNull
+    Single<Pair<Long, Boolean>> createTopic(@NonNull String title, int rating);
+    @NonNull
     Single<Pair<Long, Boolean>> removeTopic(long id);
 
     @NonNull

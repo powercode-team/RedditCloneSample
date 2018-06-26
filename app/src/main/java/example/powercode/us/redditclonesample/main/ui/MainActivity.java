@@ -83,4 +83,9 @@ public class MainActivity extends BaseViewModelFragmentActivity<MainViewModel> i
         Timber.d("Created topic with id: %d", newTopicId);
         localNavigator.popBackStack();
     }
+
+    @Override
+    public void onTopicCreateCancelled() {
+        localNavigator.popBackStack();
+    }
 }

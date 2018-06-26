@@ -59,6 +59,7 @@ public class TopicCreateViewModel extends ViewModel {
     protected void onCleared() {
         super.onCleared();
         clearDisposable(compositeDisposable);
+        clearDisposable(disposableCreateTopic);
 
         Timber.d("VM of type [ %s ] was cleared \nid %s", TopicCreateViewModel.class.getSimpleName(), this);
     }
@@ -69,30 +70,29 @@ public class TopicCreateViewModel extends ViewModel {
         }
     }
 
-    public void newTopic(long id) {
+    public void newTopic(@NonNull String title, int rating) {
         clearDisposable(disposableCreateTopic);
-        disposableCreateTopic = createTopic(id);
+        disposableCreateTopic = createTopic(title, rating);
     }
 
-    private Disposable createTopic(long id) {
+    private Disposable createTopic(@NonNull String title, int rating) {
         return repoTopics
-                .removeTopic(id)
+                .createTopic(title, rating)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(disposable -> {
-                    itemChangedLiveData.setValue(Resource.loading(id));
+                    itemChangedLiveData.setValue(Resource.loading(null));
                 })
-                .subscribe(resultRemovedTopic -> {
-                    Objects.requireNonNull(resultRemovedTopic.second);
-                    if (resultRemovedTopic.second) {
-                        itemChangedLiveData.setValue(Resource.success(resultRemovedTopic.first, null));
+                .subscribe(resultCreateTopic -> {
+                    Objects.requireNonNull(resultCreateTopic.second);
+                    if (resultCreateTopic.second) {
+                        itemChangedLiveData.setValue(Resource.success(resultCreateTopic.first, null));
                     } else {
                         itemChangedLiveData.setValue(
                                 Resource.error(
                                         new ErrorDataTyped<>(app
-                                                .getResources()
-                                                .getString(R.string.error_topic_with_id_not_found, resultRemovedTopic.first),
+                                                .getResources().getString(R.string.error_topic_create),
                                                 ErrorsTopics.NO_ITEM),
-                                        resultRemovedTopic.first
+                                        resultCreateTopic.first
                                 )
                         );
                     }

@@ -29,6 +29,7 @@ import example.powercode.us.redditclonesample.base.error.ErrorDataTyped;
 import example.powercode.us.redditclonesample.base.ui.common.DefaultTagGenerator;
 import example.powercode.us.redditclonesample.base.ui.common.HasFragmentTag;
 import example.powercode.us.redditclonesample.base.ui.fragments.BaseViewModelFragment;
+import example.powercode.us.redditclonesample.base.vm.ViewModelAttachHelper;
 import example.powercode.us.redditclonesample.databinding.FragmentTopicListBinding;
 import example.powercode.us.redditclonesample.main.vm.TopicsViewModel;
 import example.powercode.us.redditclonesample.model.entity.TopicEntity;
@@ -128,13 +129,6 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
         new ItemTouchHelper(callback).attachToRecyclerView(binding.rvTopics);
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        viewModel.getTopicsLiveData().observe(this, this::onTopicsFetchedObserver);
-    }
-
     private void onTopicsFetchedObserver(@NonNull Resource<List<TopicEntity>, ErrorDataTyped<ErrorsTopics>> resTopics) {
         switch (resTopics.status) {
             case SUCCESS: {
@@ -174,7 +168,14 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
     }
 
     @Override
-    protected void onDetachFromViewModel() {
+    protected void onAttachViewModel() {
+        viewModel.getTopicsLiveData().observe(this, this::onTopicsFetchedObserver);
+        ViewModelAttachHelper.attachObserverIfLoading(viewModel.getDeleteTopicLiveData(), this, deleteTopicObserver);
+        ViewModelAttachHelper.attachObserverIfLoading(viewModel.getApplyVoteLiveData(), this, voteTopicObserver);
+    }
+
+    @Override
+    protected void onDetachViewModel() {
         viewModel.getTopicsLiveData().removeObservers(this);
         viewModel.getApplyVoteLiveData().removeObservers(this);
         viewModel.getDeleteTopicLiveData().removeObservers(this);

@@ -5,4 +5,12 @@
     <string name="hint_initial_rating">integer value</string>
     <!--<string name="hint_initial_rating">-2000000000 &lt;= r &lt;= 2000000000</string>-->
     <string name="button_create">Create</string>
+    <string name="default_rating_as_string">0</string>
+
+    <string name="content_description_topic_picture">Topic picture</string>
+
+    <string name="error_topic_rating_is_not_number">Enter integer value</string>
+    <string name="error_topic_rating_is_out_bound">An integer within range -%1$d; %2$d</string>
+    <string name="error_topic_title_invalid">Topic title should be a non-empty string and cannot contain only white-spaces</string>
+    <string name="error_topic_create">Failed to create topic</string>
 </resources>

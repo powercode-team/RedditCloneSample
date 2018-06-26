@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer name="max_lines_topic_title">2</integer>
+    <integer name="topic_rating_abs_limit">2000000000</integer>
+    <integer name="topic_max_rating_digits">11</integer>
 </resources>
