@@ -65,8 +65,9 @@
             android:layout_marginBottom="@dimen/padding_16"
             android:layout_marginEnd="@dimen/padding_16"
             android:src="@drawable/ic_add_white_24dp"
+            app:fabSize="normal"
             app:layout_anchor="@id/rv_topics"
             app:layout_anchorGravity="bottom|end"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+            app:layout_behavior="example.powercode.us.redditclonesample.main.ui.ScrollAwareFloatingActionButtonBehaviour" />
     </android.support.design.widget.CoordinatorLayout>
 </layout>

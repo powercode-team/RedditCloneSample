@@ -2,4 +2,6 @@
     <string name="app_name">RedditCloneSample</string>
 
     <string name="content_description_action_back">Press to navigate back</string>
+
+    <!--<string name="fab_scrolling_view_behavior" translatable="false">example.powercode.us.redditclonesample.main.ui.ScrollAwareFloatingActionButtonBehaviour</string>-->
 </resources>
