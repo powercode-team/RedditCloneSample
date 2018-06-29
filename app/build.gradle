@@ -50,11 +50,11 @@ dependencies {
     implementation deps.support.recyclerview
     implementation deps.support.design
 
-    implementation deps.rx.java
-    implementation deps.rx.android
-    implementation deps.rx.rxbinding2.support_v4
-    implementation deps.rx.rxbinding2.appcompat_v7
-    implementation deps.rx.rxbinding2.design
+//    implementation deps.rx.java
+//    implementation deps.rx.android
+//    implementation deps.rx.rxbinding2.support_v4
+//    implementation deps.rx.rxbinding2.appcompat_v7
+//    implementation deps.rx.rxbinding2.design
 
     implementation deps.arch_lifecycle_java
     implementation deps.arch_lifecycle_extension

@@ -13,6 +13,7 @@ import android.widget.EditText;
 
 import com.jakewharton.rxbinding2.view.RxView;
 
+import java.lang.ref.WeakReference;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -30,6 +31,7 @@ import example.powercode.us.redditclonesample.ui.activities.main.vm.TopicCreateV
 import example.powercode.us.redditclonesample.model.common.Resource;
 import example.powercode.us.redditclonesample.model.error.ErrorsTopics;
 import example.powercode.us.redditclonesample.model.rules.BRulesTopics;
+import example.powercode.us.redditclonesample.ui.utils.AbstractOnClickListener;
 import example.powercode.us.redditclonesample.ui.utils.UserInputUtils;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
@@ -57,12 +59,6 @@ public class TopicCreateFragment extends BaseViewModelFragment<TopicCreateViewMo
 
     private FragmentTopicCreateBinding binding;
 
-    private CompositeDisposable uiInputDisposable;
-
-    public TopicCreateFragment() {
-        // Required empty public constructor
-    }
-
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -88,60 +84,38 @@ public class TopicCreateFragment extends BaseViewModelFragment<TopicCreateViewMo
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        uiInputDisposable = new CompositeDisposable();
-        assignListeners(uiInputDisposable);
+        assignListeners();
     }
 
-    private void assignListeners(@NonNull CompositeDisposable uiInputDisposable) {
-        uiInputDisposable.add(
-                RxView
-                        .clicks(binding.rootTopicCreate.topicNewAbort)
-                        .takeUntil(RxView.detaches(binding.rootTopicCreate.topicNewAbort))
-                        .subscribe(o -> listener.onTopicCreateCancelled())
-        );
-
-        uiInputDisposable.add(
-                RxView
-                        .clicks(binding.rootTopicCreate.topicNewCreate)
-                        .takeUntil(RxView.detaches(binding.rootTopicCreate.topicNewCreate))
-                        .flatMapMaybe(o ->
-                                validateTopicCreateParams(BRulesTopics::isTitleValid,
-                                        new RatingPredicate(getResources().getInteger(R.integer.topic_rating_abs_limit))))
-                        .subscribe(paramsHolder -> {
-                            viewModel.getCreateTopicLiveData().observe(this, createTopicObserver);
-                            viewModel.newTopic(paramsHolder.topicTitle, paramsHolder.topicRating);
-                        })
-        );
-
-        uiInputDisposable.add(
-                RxView.clicks(binding.toolbarContent.actionBack)
-                .takeUntil(RxView.detaches(binding.toolbarContent.actionBack))
-                .subscribe(o -> listener.onTopicCreateCancelled())
-        );
+    private void assignListeners() {
+        final OnClickListenerImpl impl = new OnClickListenerImpl(this);
+        binding.rootTopicCreate.topicNewAbort.setOnClickListener(impl);
+        binding.rootTopicCreate.topicNewCreate.setOnClickListener(impl);
+        binding.toolbarContent.actionBack.setOnClickListener(impl);
     }
 
-    private Maybe<ParamsHolder> validateTopicCreateParams(@NonNull Predicate<String> titleValidator,
+    private ParamsHolder validateTopicCreateParams(@NonNull Predicate<String> titleValidator,
                                                           @NonNull ParamPredicate<Integer> ratingValidator) {
-        return formatInputParams(binding.rootTopicCreate.inputTitle,
-                                            binding.rootTopicCreate.inputInitialRating)
-        .filter(paramsHolder -> validateTopicTitle(paramsHolder.topicTitle, titleValidator, binding.rootTopicCreate.inputTitle)
-                && validateTopicRating(paramsHolder.topicRating, ratingValidator, binding.rootTopicCreate.inputInitialRating));
+        final ParamsHolder paramsHolder = formatInputParams(binding.rootTopicCreate.inputTitle,
+                                            binding.rootTopicCreate.inputInitialRating);
+        if (validateTopicTitle(paramsHolder.topicTitle, titleValidator, binding.rootTopicCreate.inputTitle)
+                && validateTopicRating(paramsHolder.topicRating, ratingValidator, binding.rootTopicCreate.inputInitialRating)) {
+            return paramsHolder;
+        }
+        return null;
     }
 
     @NonNull
-    private static Single<ParamsHolder> formatInputParams(@NonNull EditText inputTitle, @NonNull EditText inputInitialRating) {
-        return Single.fromCallable(() -> {
-            final String titleCleaned = UserInputUtils.removeDuplicateSpaces(inputTitle.getText().toString().trim());
-            int initialRating = Integer.MIN_VALUE;
-            try {
-                initialRating = Integer.parseInt(inputInitialRating.getText().toString());
-            }
-            catch (NumberFormatException ignored) {
-            }
+    private static ParamsHolder formatInputParams(@NonNull EditText inputTitle, @NonNull EditText inputInitialRating) {
+        final String titleCleaned = UserInputUtils.removeDuplicateSpaces(inputTitle.getText().toString().trim());
+        int initialRating = Integer.MIN_VALUE;
+        try {
+            initialRating = Integer.parseInt(inputInitialRating.getText().toString());
+        }
+        catch (NumberFormatException ignored) {
+        }
 
-            return new ParamsHolder(titleCleaned, initialRating);
-        });
+        return new ParamsHolder(titleCleaned, initialRating);
     }
 
     private boolean validateTopicTitle(String topicTitle, @NonNull Predicate<String> titleValidator, @NonNull EditText uiControl) {
@@ -190,12 +164,6 @@ public class TopicCreateFragment extends BaseViewModelFragment<TopicCreateViewMo
     };
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        uiInputDisposable.dispose();
-    }
-
-    @Override
     public void onDetach() {
         super.onDetach();
         listener = null;
@@ -215,6 +183,23 @@ public class TopicCreateFragment extends BaseViewModelFragment<TopicCreateViewMo
     @Override
     protected void onDetachViewModel() {
         viewModel.getCreateTopicLiveData().removeObservers(this);
+    }
+
+    private void onTopicNewAbort() {
+        listener.onTopicCreateCancelled();
+    }
+
+    private void onActionBack() {
+        listener.onTopicCreateCancelled();
+    }
+
+    private void onTopicNewCreate() {
+        final ParamsHolder paramsHolder = validateTopicCreateParams(BRulesTopics::isTitleValid,
+                new RatingPredicate(getResources().getInteger(R.integer.topic_rating_abs_limit)));
+        if (paramsHolder != null) {
+            viewModel.getCreateTopicLiveData().observe(this, createTopicObserver);
+            viewModel.newTopic(paramsHolder.topicTitle, paramsHolder.topicRating);
+        }
     }
 
     /**
@@ -251,6 +236,31 @@ public class TopicCreateFragment extends BaseViewModelFragment<TopicCreateViewMo
         @Override
         public boolean test(Integer rating) {
             return BRulesTopics.isRatingValid(rating, param);
+        }
+    }
+
+    private static class OnClickListenerImpl extends AbstractOnClickListener {
+
+        private final WeakReference<TopicCreateFragment> ref;
+
+        public OnClickListenerImpl(final TopicCreateFragment fragment) {
+            this.ref = new WeakReference<>(fragment);
+        }
+
+        @Override
+        protected void _onClick(final View view) {
+            final TopicCreateFragment fragment = ref.get();
+            if (fragment == null) {
+                return;
+            }
+            final int viewId = view.getId();
+            if (viewId == R.id.topic_new_abort) {
+                fragment.onTopicNewAbort();
+            } else if (viewId == R.id.topic_new_create) {
+                fragment.onTopicNewCreate();
+            } else if (viewId == R.id.action_back) {
+                fragment.onActionBack();
+            }
         }
     }
 }
