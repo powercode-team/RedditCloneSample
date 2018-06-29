@@ -6,7 +6,7 @@
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".main.ui.TopicCreateFragment">
+        tools:context=".ui.activities.main.TopicCreateFragment">
 
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"

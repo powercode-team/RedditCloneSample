@@ -18,7 +18,7 @@ import example.powercode.us.redditclonesample.common.functional.Function;
 import javax.inject.Inject;
 
 import example.powercode.us.redditclonesample.app.di.scopes.PerApplication;
-import example.powercode.us.redditclonesample.base.error.ErrorDataTyped;
+import example.powercode.us.redditclonesample.ui.activities.base.error.ErrorDataTyped;
 import example.powercode.us.redditclonesample.model.common.Resource;
 import example.powercode.us.redditclonesample.model.entity.EntityActionType;
 import example.powercode.us.redditclonesample.model.entity.TopicEntity;
@@ -26,7 +26,6 @@ import example.powercode.us.redditclonesample.model.entity.VoteType;
 import example.powercode.us.redditclonesample.model.error.ErrorsTopics;
 import example.powercode.us.redditclonesample.model.repository.RepoTopics;
 import example.powercode.us.redditclonesample.model.rules.BRulesTopics;
-import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;

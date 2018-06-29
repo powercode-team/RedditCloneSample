@@ -41,9 +41,7 @@ public final class TheApp extends Application implements HasActivityInjector {
             Timber.plant(new Timber.DebugTree());
         }
 
-        DaggerAppComponent
-                .builder()
-                .application(this)
+        DaggerAppComponent.builder()
                 .create(this)
                 .inject(this);
     }

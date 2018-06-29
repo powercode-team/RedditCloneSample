@@ -18,8 +18,5 @@ import example.powercode.us.redditclonesample.app.di.scopes.PerApplication;
 public interface AppComponent extends AndroidInjector<TheApp> {
 
     @Component.Builder
-    abstract class Builder extends AndroidInjector.Builder<TheApp> {
-        @BindsInstance
-        public abstract Builder application(Application app);
-    }
+    abstract class Builder extends AndroidInjector.Builder<TheApp> {}
 }

@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import java.util.Locale;
 import java.util.Objects;
 
-import example.powercode.us.redditclonesample.base.ui.common.HasId;
+import example.powercode.us.redditclonesample.ui.activities.base.common.HasId;
 
 /**
  * Created by dev for RedditCloneSample on 19-Jun-18.

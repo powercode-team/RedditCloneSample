@@ -13,7 +13,6 @@ import dagger.android.support.AndroidSupportInjectionModule;
 import example.powercode.us.redditclonesample.app.TheApp;
 import example.powercode.us.redditclonesample.app.di.qualifiers.AppContext;
 import example.powercode.us.redditclonesample.app.di.scopes.PerApplication;
-import example.powercode.us.redditclonesample.model.di.ReposModule;
 
 /**
  * Created by dev for RedditCloneSample on 12-Jun-18.
@@ -26,9 +25,9 @@ public interface AppModule {
         return app.getAppRefWatcher();
     }
 
-//    @PerApplication
-//    @Binds
-//    Application bindApplication(@NonNull TheApp app);
+    @PerApplication
+    @Binds
+    Application bindApplication(@NonNull TheApp app);
 
     @PerApplication
     @AppContext

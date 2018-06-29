@@ -8,10 +8,10 @@ import dagger.Binds;
 import dagger.Module;
 import dagger.multibindings.IntoMap;
 import example.powercode.us.redditclonesample.app.di.mapkey.ViewModelKey;
-import example.powercode.us.redditclonesample.base.ui.MainViewModelFactory;
-import example.powercode.us.redditclonesample.main.vm.MainViewModel;
-import example.powercode.us.redditclonesample.main.vm.TopicCreateViewModel;
-import example.powercode.us.redditclonesample.main.vm.TopicsViewModel;
+import example.powercode.us.redditclonesample.ui.activities.base.MainViewModelFactory;
+import example.powercode.us.redditclonesample.ui.activities.main.vm.MainViewModel;
+import example.powercode.us.redditclonesample.ui.activities.main.vm.TopicCreateViewModel;
+import example.powercode.us.redditclonesample.ui.activities.main.vm.TopicsViewModel;
 
 /**
  * Module to provide view models

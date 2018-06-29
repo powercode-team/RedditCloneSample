@@ -3,5 +3,5 @@
 
     <string name="content_description_action_back">Press to navigate back</string>
 
-    <!--<string name="fab_scrolling_view_behavior" translatable="false">example.powercode.us.redditclonesample.main.ui.ScrollAwareFloatingActionButtonBehaviour</string>-->
+    <!--<string name="fab_scrolling_view_behavior" translatable="false">example.powercode.us.redditclonesample.ui.activities.main.ScrollAwareFloatingActionButtonBehaviour</string>-->
 </resources>
