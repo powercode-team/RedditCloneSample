@@ -1,4 +1,4 @@
-# Android RedditCloneSample ![GitHub release](https://img.shields.io/github/release/qubyte/rubidium.svg)(1.0.0)
+# Android RedditCloneSample (1.0.0)
 *Android project*
 
 ---
