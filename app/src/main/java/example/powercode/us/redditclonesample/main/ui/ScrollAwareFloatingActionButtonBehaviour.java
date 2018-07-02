@@ -5,14 +5,18 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
+
+import timber.log.Timber;
 
 /**
  * Created by dev for RedditCloneSample on 27-Jun-18.
  */
 public class ScrollAwareFloatingActionButtonBehaviour extends FloatingActionButton.Behavior {
-    private static final int SCROLL_CONSUMED_Y_THRESHOLD = 6;
+    private static final int SCROLL_CONSUMED_Y_THRESHOLD = 0;
 
     @NonNull
     private final FloatingActionButton.OnVisibilityChangedListener hideChangedListener
@@ -47,8 +51,45 @@ public class ScrollAwareFloatingActionButtonBehaviour extends FloatingActionButt
 
         if (dyConsumed > SCROLL_CONSUMED_Y_THRESHOLD && child.getVisibility() == View.VISIBLE) {
             child.hide(hideChangedListener);
-        } else if (dyConsumed < -SCROLL_CONSUMED_Y_THRESHOLD && child.getVisibility() != View.VISIBLE) {
+        } else if (dyConsumed <= -SCROLL_CONSUMED_Y_THRESHOLD && child.getVisibility() != View.VISIBLE) {
             child.show();
         }
+    }
+
+    private static boolean isRecyclerView(@NonNull View view) {
+        return view instanceof RecyclerView;
+    }
+
+    @Override
+    public boolean onDependentViewChanged(CoordinatorLayout parent, FloatingActionButton child, View dependency) {
+        boolean behaviourChanged = super.onDependentViewChanged(parent, child, dependency);
+        if (isRecyclerView(dependency)) {
+            Timber.d("onDependantViewChanged %s", dependency);
+        }
+
+        return behaviourChanged;
+    }
+
+    private boolean shouldUpdateVisibility(View dependency, FloatingActionButton child) {
+        final CoordinatorLayout.LayoutParams lp =
+                (CoordinatorLayout.LayoutParams) child.getLayoutParams();
+        if (!isAutoHideEnabled()) {
+            return false;
+        }
+
+        //noinspection RedundantIfStatement
+        if (lp.getAnchorId() != dependency.getId()) {
+            // The anchor ID doesn't match the dependency, so we won't automatically
+            // show/hide the FAB
+            return false;
+        }
+
+        //noinspection RedundantIfStatement
+//        if (child.getVisibility() != View.VISIBLE) {
+//            // The view isn't set to be visible so skip changing its visibility
+//            return false;
+//        }
+
+        return true;
     }
 }
