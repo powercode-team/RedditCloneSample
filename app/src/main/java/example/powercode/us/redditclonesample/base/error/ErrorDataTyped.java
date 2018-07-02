@@ -1,10 +1,7 @@
 package example.powercode.us.redditclonesample.base.error;
 
-import example.powercode.us.redditclonesample.base.error.ErrorBase;
-
 /**
- * Created by dev for YoungBusinessClub on 19-Mar-18.
- *
+ * Typed error holder
  */
 public class ErrorDataTyped<ErrorTypes extends Enum<ErrorTypes>> implements ErrorBase {
     private final ErrorTypes errorTypes;

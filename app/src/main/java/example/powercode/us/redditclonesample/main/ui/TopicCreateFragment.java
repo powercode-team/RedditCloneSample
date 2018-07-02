@@ -1,6 +1,7 @@
 package example.powercode.us.redditclonesample.main.ui;
 
 import android.arch.lifecycle.Observer;
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -18,6 +19,8 @@ import java.util.Objects;
 import javax.inject.Inject;
 
 import example.powercode.us.redditclonesample.R;
+import example.powercode.us.redditclonesample.app.di.qualifiers.ActivityContext;
+import example.powercode.us.redditclonesample.app.di.qualifiers.AppContext;
 import example.powercode.us.redditclonesample.base.error.ErrorDataTyped;
 import example.powercode.us.redditclonesample.base.ui.common.DefaultTagGenerator;
 import example.powercode.us.redditclonesample.base.ui.common.HasFragmentTag;
@@ -30,6 +33,7 @@ import example.powercode.us.redditclonesample.main.vm.TopicCreateViewModel;
 import example.powercode.us.redditclonesample.model.common.Resource;
 import example.powercode.us.redditclonesample.model.error.ErrorsTopics;
 import example.powercode.us.redditclonesample.model.rules.BRulesTopics;
+import example.powercode.us.redditclonesample.utils.KeyboardUtils;
 import example.powercode.us.redditclonesample.utils.UserInputUtils;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
@@ -54,6 +58,10 @@ public class TopicCreateFragment extends BaseViewModelFragment<TopicCreateViewMo
 
     @Inject
     OnInteractionListener listener;
+
+    @Inject
+    @ActivityContext
+    Context activityContext;
 
     private FragmentTopicCreateBinding binding;
 
@@ -98,7 +106,7 @@ public class TopicCreateFragment extends BaseViewModelFragment<TopicCreateViewMo
                 RxView
                         .clicks(binding.rootTopicCreate.topicNewAbort)
                         .takeUntil(RxView.detaches(binding.rootTopicCreate.topicNewAbort))
-                        .subscribe(o -> listener.onTopicCreateCancelled())
+                        .subscribe(o -> doHandleCancel())
         );
 
         uiInputDisposable.add(
@@ -109,6 +117,8 @@ public class TopicCreateFragment extends BaseViewModelFragment<TopicCreateViewMo
                                 validateTopicCreateParams(BRulesTopics::isTitleValid,
                                         new RatingPredicate(getResources().getInteger(R.integer.topic_rating_abs_limit))))
                         .subscribe(paramsHolder -> {
+                            KeyboardUtils.hideKeyboard(activityContext, TopicCreateFragment.this);
+
                             viewModel.getCreateTopicLiveData().observe(this, createTopicObserver);
                             viewModel.newTopic(paramsHolder.topicTitle, paramsHolder.topicRating);
                         })
@@ -117,8 +127,15 @@ public class TopicCreateFragment extends BaseViewModelFragment<TopicCreateViewMo
         uiInputDisposable.add(
                 RxView.clicks(binding.toolbarContent.actionBack)
                 .takeUntil(RxView.detaches(binding.toolbarContent.actionBack))
-                .subscribe(o -> listener.onTopicCreateCancelled())
+                .subscribe(o -> doHandleCancel())
         );
+    }
+
+    private void doHandleCancel() {
+        Objects.requireNonNull(activityContext);
+
+        KeyboardUtils.hideKeyboard(activityContext, this);
+        listener.onTopicCreateCancelled();
     }
 
     private Maybe<ParamsHolder> validateTopicCreateParams(@NonNull Predicate<String> titleValidator,
