@@ -31,5 +31,8 @@ public interface RepoTopics {
     Single<Pair<Long, Boolean>> removeTopic(long id);
 
     @NonNull
+    Single<Resource<TopicEntity, ErrorDataTyped<ErrorsTopics>>> getById(long topicId);
+
+    @NonNull
     Observable<Pair<TopicEntity, EntityActionType>> onTopicChangeObservable();
 }

@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -18,6 +17,11 @@ import javax.inject.Inject;
 import example.powercode.us.redditclonesample.R;
 import example.powercode.us.redditclonesample.base.error.ErrorDataTyped;
 import example.powercode.us.redditclonesample.common.arch.SingleLiveEvent;
+import example.powercode.us.redditclonesample.common.patterns.holder.CommandHolder;
+import example.powercode.us.redditclonesample.common.patterns.holder.CommandHolderSingle;
+import example.powercode.us.redditclonesample.main.vm.command.CommandDeleteTopic;
+import example.powercode.us.redditclonesample.main.vm.command.ReceiverCommandDelete;
+import example.powercode.us.redditclonesample.main.vm.command.ReceiverCommandVoteTopic;
 import example.powercode.us.redditclonesample.model.common.Resource;
 import example.powercode.us.redditclonesample.model.common.Status;
 import example.powercode.us.redditclonesample.model.entity.EntityActionType;
@@ -35,7 +39,7 @@ import timber.log.Timber;
 /**
  * Created by dev for RedditCloneSample on 18-Jun-18.
  */
-public class TopicsViewModel extends ViewModel {
+public class TopicsViewModel extends ViewModel implements ReceiverCommandDelete, ReceiverCommandVoteTopic {
     @NonNull
     private final MutableLiveData<Resource<List<TopicEntity>, ErrorDataTyped<ErrorsTopics>>> topicsLiveData = new MutableLiveData<>();
 
@@ -58,10 +62,17 @@ public class TopicsViewModel extends ViewModel {
     @Nullable
     private Disposable disposableRemoveTopic = null;
 
+    @Nullable
+    private Disposable disposableFindTopicById = null;
+
+    @NonNull
+    private final CommandHolder commandHolder;
+
     @Inject
-    TopicsViewModel(@NonNull Application app, @NonNull RepoTopics repoTopics) {
+    TopicsViewModel(@NonNull Application app, @NonNull RepoTopics repoTopics, @NonNull CommandHolderSingle commandHolderImpl) {
         this.app = app;
         this.repoTopics = repoTopics;
+        this.commandHolder = commandHolderImpl;
         Timber.d("VM of type [ %s ] constructor called \nid %s", TopicsViewModel.class.getSimpleName(), this);
 
         topicsLiveData.setValue(Resource.loading(null));
@@ -107,12 +118,17 @@ public class TopicsViewModel extends ViewModel {
     @Override
     protected void onCleared() {
         super.onCleared();
-        clearDisposable(compositeDisposable);
+        clearDisposableSafe(compositeDisposable);
+        clearDisposableSafe(disposableFindTopicById);
+        clearDisposableSafe(disposableApplyVote);
+        clearDisposableSafe(disposableRemoveTopic);
+
+        commandHolder.clear();
 
         Timber.d("VM of type [ %s ] was cleared \nid %s", TopicsViewModel.class.getSimpleName(), this);
     }
 
-    private void clearDisposable(@Nullable Disposable d) {
+    private void clearDisposableSafe(@Nullable Disposable d) {
         if (d != null && !d.isDisposed()) {
             d.dispose();
         }
@@ -123,8 +139,9 @@ public class TopicsViewModel extends ViewModel {
         return topicsLiveData;
     }
 
+    @Override
     public void voteTopic(long id, @NonNull VoteType vt) {
-        clearDisposable(disposableApplyVote);
+        clearDisposableSafe(disposableApplyVote);
         disposableApplyVote = applyVoteTopic(id, vt);
     }
 
@@ -160,9 +177,44 @@ public class TopicsViewModel extends ViewModel {
         return itemChangedLiveData;
     }
 
+    public void topicDelete(long id) {
+        clearDisposableSafe(disposableFindTopicById);
+        disposableFindTopicById = repoTopics
+                .getById(id)
+                .doOnSubscribe(disposable -> itemRemovedLiveData.setValue(Resource.loading(id)))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(topicEntityResource -> {
+                            if (topicEntityResource.status == Status.ERROR) {
+                                itemRemovedLiveData.setValue(
+                                        Resource.error(
+                                                new ErrorDataTyped<>(app
+                                                        .getResources()
+                                                        .getString(R.string.error_topic_with_id_not_found, id),
+                                                        ErrorsTopics.NO_ITEM),
+                                                id
+                                        )
+                                );
+                                return;
+                            }
+
+                            TopicEntity removedTopic = topicEntityResource.data;
+                            Objects.requireNonNull(removedTopic);
+
+                            commandHolder.push(new CommandDeleteTopic(TopicsViewModel.this, removedTopic));
+                            commandHolder.current().execute();
+                        },
+                        Timber::e);
+    }
+
+    @Override
     public void deleteTopic(long id) {
-        clearDisposable(disposableRemoveTopic);
+        clearDisposableSafe(disposableRemoveTopic);
         disposableRemoveTopic = removeTopic(id);
+    }
+
+    @Override
+    public void undoDeleteTopic(@NonNull TopicEntity topic2Restore) {
+        commandHolder.current().undo();
     }
 
     private Disposable removeTopic(long id) {
@@ -193,5 +245,8 @@ public class TopicsViewModel extends ViewModel {
     @NonNull
     public LiveData<Resource<Long, ErrorDataTyped<ErrorsTopics>>> getDeleteTopicLiveData() {
         return itemRemovedLiveData;
+    }
+
+    public void undoTopicDelete() {
     }
 }

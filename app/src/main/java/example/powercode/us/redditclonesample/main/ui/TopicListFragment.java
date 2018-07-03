@@ -7,6 +7,8 @@ import android.databinding.ObservableInt;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
@@ -40,6 +42,7 @@ import example.powercode.us.redditclonesample.model.entity.VoteType;
 import example.powercode.us.redditclonesample.model.error.ErrorsTopics;
 import example.powercode.us.redditclonesample.utils.ViewUtils;
 import io.reactivex.disposables.CompositeDisposable;
+import timber.log.Timber;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -249,7 +252,7 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
         public void onSwiped(TopicsAdapter.ItemViewHolder viewHolder, int direction) {
             TopicEntity topicToDelete = adapter.getItem(viewHolder.getAdapterPosition());
             viewModel.getDeleteTopicLiveData().observe(TopicListFragment.this, deleteTopicObserver);
-            viewModel.deleteTopic(topicToDelete.id);
+            viewModel.topicDelete(topicToDelete.id);
         }
 
         @Override
@@ -267,6 +270,17 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
                 case SUCCESS: {
                     viewModel.getDeleteTopicLiveData().removeObserver(this);
                     // Do nothing since notify changes will trigger update
+
+                    Snackbar
+                            .make(binding.getRoot(), R.string.action_item_deleted, Snackbar.LENGTH_LONG)
+                            .setAction(R.string.action_undo, v -> viewModel.undoTopicDelete())
+                            .addCallback(new Snackbar.Callback() {
+                                @Override
+                                public void onDismissed(Snackbar snackbar, int event) {
+
+                                }
+                            })
+                            .show();
 
                     break;
                 }
