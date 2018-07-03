@@ -12,6 +12,8 @@
 
     <dimen name="width_items_count">36dp</dimen>
 
+    <dimen name="margin_rv_last_item_to_fab">8dp</dimen>
+
     <dimen name="toolbar_inset_start">16dp</dimen>
     <dimen name="toolbar_inset_end">16dp</dimen>
 

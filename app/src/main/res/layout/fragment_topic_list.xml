@@ -4,11 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="android.databinding.ObservableInt"/>
+
+        <import type="android.databinding.ObservableInt" />
 
         <variable
             name="itemsCount"
-            type="ObservableInt"/>
+            type="ObservableInt" />
     </data>
 
     <android.support.design.widget.CoordinatorLayout
@@ -22,11 +23,12 @@
         <!--android:fillViewport="true"-->
         <!--app:layout_behavior="@string/appbar_scrolling_view_behavior">-->
 
+        <!--android:paddingBottom is set programmatically in the fragment to handle FAB size and margins-->
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_topics"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
+            android:clipToPadding="false"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             tools:listitem="@layout/item_topic" />
@@ -53,8 +55,7 @@
                 <include
                     android:id="@+id/toolbar_content"
                     layout="@layout/toolbar_topic_list"
-                    app:itemsCount="@{itemsCount}"
-                    />
+                    app:itemsCount="@{itemsCount}" />
             </android.support.v7.widget.Toolbar>
         </android.support.design.widget.AppBarLayout>
 
@@ -65,9 +66,8 @@
             android:layout_marginBottom="@dimen/padding_16"
             android:layout_marginEnd="@dimen/padding_16"
             android:src="@drawable/ic_add_white_24dp"
-            app:fabSize="normal"
+            app:fabSize="auto"
             app:layout_anchor="@id/rv_topics"
-            app:layout_anchorGravity="bottom|end"
-            app:layout_behavior="example.powercode.us.redditclonesample.main.ui.ScrollAwareFloatingActionButtonBehaviour" />
+            app:layout_anchorGravity="bottom|end" />
     </android.support.design.widget.CoordinatorLayout>
 </layout>

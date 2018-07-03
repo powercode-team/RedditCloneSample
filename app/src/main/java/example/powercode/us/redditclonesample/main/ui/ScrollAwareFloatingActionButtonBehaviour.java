@@ -15,6 +15,7 @@ import timber.log.Timber;
 /**
  * Created by dev for RedditCloneSample on 27-Jun-18.
  */
+//app:layout_behavior="example.powercode.us.redditclonesample.main.ui.ScrollAwareFloatingActionButtonBehaviour" just an experiment but can be safely removed
 public class ScrollAwareFloatingActionButtonBehaviour extends FloatingActionButton.Behavior {
     private static final int SCROLL_CONSUMED_Y_THRESHOLD = 0;
 

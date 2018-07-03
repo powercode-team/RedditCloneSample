@@ -12,9 +12,11 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 import com.jakewharton.rxbinding2.view.RxView;
 
@@ -36,6 +38,7 @@ import example.powercode.us.redditclonesample.model.common.Resource;
 import example.powercode.us.redditclonesample.model.entity.TopicEntity;
 import example.powercode.us.redditclonesample.model.entity.VoteType;
 import example.powercode.us.redditclonesample.model.error.ErrorsTopics;
+import example.powercode.us.redditclonesample.utils.ViewUtils;
 import io.reactivex.disposables.CompositeDisposable;
 
 /**
@@ -109,6 +112,14 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
                 new TopicsTouchHelper(0, ItemTouchHelper.LEFT, swipeInteractionListener)
         );
 
+        binding.fabTopicCreate.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                setRecyclerViewPaddingToFAB(getResources().getDimensionPixelSize(R.dimen.margin_rv_last_item_to_fab));
+                ViewUtils.removeOnGlobalLayoutListener(binding.fabTopicCreate, this);
+            }
+        });
+
         uiInputDisposable = new CompositeDisposable();
         assignListeners(uiInputDisposable);
     }
@@ -130,6 +141,15 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
 
         binding.rvTopics.setAdapter(adapter);
         new ItemTouchHelper(callback).attachToRecyclerView(binding.rvTopics);
+    }
+
+    private void setRecyclerViewPaddingToFAB(int extraPaddingBottom) {
+        ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams)binding.fabTopicCreate.getLayoutParams();
+
+        int bottomPadding = binding.fabTopicCreate.getHeight() + mlp.bottomMargin + extraPaddingBottom;
+        ViewUtils.setPaddingRelative(binding.rvTopics, ViewUtils.getPaddingStart(binding.rvTopics),
+                binding.rvTopics.getPaddingTop(),
+                ViewUtils.getPaddingEnd(binding.rvTopics), bottomPadding);
     }
 
     private void onTopicsFetchedObserver(@NonNull Resource<List<TopicEntity>, ErrorDataTyped<ErrorsTopics>> resTopics) {
