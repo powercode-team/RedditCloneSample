@@ -4,12 +4,9 @@ import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
-import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.util.Pair;
 
-import java.util.List;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -18,13 +15,8 @@ import example.powercode.us.redditclonesample.R;
 import example.powercode.us.redditclonesample.base.error.ErrorDataTyped;
 import example.powercode.us.redditclonesample.common.arch.SingleLiveEvent;
 import example.powercode.us.redditclonesample.model.common.Resource;
-import example.powercode.us.redditclonesample.model.entity.EntityActionType;
-import example.powercode.us.redditclonesample.model.entity.TopicEntity;
-import example.powercode.us.redditclonesample.model.entity.VoteType;
 import example.powercode.us.redditclonesample.model.error.ErrorsTopics;
 import example.powercode.us.redditclonesample.model.repository.RepoTopics;
-import example.powercode.us.redditclonesample.model.rules.BRulesTopics;
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -58,20 +50,20 @@ public class TopicCreateViewModel extends ViewModel {
     @Override
     protected void onCleared() {
         super.onCleared();
-        clearDisposable(compositeDisposable);
-        clearDisposable(disposableCreateTopic);
+        clearDisposableSafe(compositeDisposable);
+        clearDisposableSafe(disposableCreateTopic);
 
         Timber.d("VM of type [ %s ] was cleared \nid %s", TopicCreateViewModel.class.getSimpleName(), this);
     }
 
-    private void clearDisposable(@Nullable Disposable d) {
+    private void clearDisposableSafe(@Nullable Disposable d) {
         if (d != null && !d.isDisposed()) {
             d.dispose();
         }
     }
 
     public void newTopic(@NonNull String title, int rating) {
-        clearDisposable(disposableCreateTopic);
+        clearDisposableSafe(disposableCreateTopic);
         disposableCreateTopic = createTopic(title, rating);
     }
 

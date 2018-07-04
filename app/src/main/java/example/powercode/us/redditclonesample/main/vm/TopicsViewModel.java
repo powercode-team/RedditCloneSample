@@ -44,7 +44,10 @@ public class TopicsViewModel extends ViewModel implements ReceiverCommandDelete,
     private final MutableLiveData<Resource<List<TopicEntity>, ErrorDataTyped<ErrorsTopics>>> topicsLiveData = new MutableLiveData<>();
 
     @NonNull
-    private final MutableLiveData<Resource<Long, ErrorDataTyped<ErrorsTopics>>> itemChangedLiveData = new SingleLiveEvent<>();
+    private final MutableLiveData<Resource<Long, ErrorDataTyped<ErrorsTopics>>> itemApplyVoteLiveData = new SingleLiveEvent<>();
+
+    @NonNull
+    private final MutableLiveData<Resource<Long, ErrorDataTyped<ErrorsTopics>>> itemCreatedLiveData = new SingleLiveEvent<>();
 
     @NonNull
     private final MutableLiveData<Resource<Long, ErrorDataTyped<ErrorsTopics>>> itemRemovedLiveData = new SingleLiveEvent<>();
@@ -64,6 +67,9 @@ public class TopicsViewModel extends ViewModel implements ReceiverCommandDelete,
 
     @Nullable
     private Disposable disposableFindTopicById = null;
+
+    @Nullable
+    private Disposable disposableCreateTopic = null;
 
     @NonNull
     private final CommandHolder commandHolder;
@@ -151,15 +157,15 @@ public class TopicsViewModel extends ViewModel implements ReceiverCommandDelete,
                 .applyVoteToTopic(id, vt)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(disposable -> {
-                    itemChangedLiveData.setValue(Resource.loading(id));
+                    itemApplyVoteLiveData.setValue(Resource.loading(id));
                 })
                 .subscribe(resultAppliedVote -> {
 //                    Timber.d("Vote applied with result: %b", isApplied);
                     Objects.requireNonNull(resultAppliedVote.second);
                     if (resultAppliedVote.second) {
-                        itemChangedLiveData.setValue(Resource.success(resultAppliedVote.first, null));
+                        itemApplyVoteLiveData.setValue(Resource.success(resultAppliedVote.first, null));
                     } else {
-                        itemChangedLiveData.setValue(
+                        itemApplyVoteLiveData.setValue(
                                 Resource.error(
                                         new ErrorDataTyped<>(app
                                                 .getResources()
@@ -174,7 +180,7 @@ public class TopicsViewModel extends ViewModel implements ReceiverCommandDelete,
 
     @NonNull
     public LiveData<Resource<Long, ErrorDataTyped<ErrorsTopics>>> getApplyVoteLiveData() {
-        return itemChangedLiveData;
+        return itemApplyVoteLiveData;
     }
 
     public void topicDelete(long id) {
@@ -214,7 +220,7 @@ public class TopicsViewModel extends ViewModel implements ReceiverCommandDelete,
 
     @Override
     public void undoDeleteTopic(@NonNull TopicEntity topic2Restore) {
-        commandHolder.current().undo();
+        restoreTopic(topic2Restore.title, topic2Restore.getRating());
     }
 
     private Disposable removeTopic(long id) {
@@ -242,11 +248,47 @@ public class TopicsViewModel extends ViewModel implements ReceiverCommandDelete,
                 }, throwable -> Timber.e(throwable));
     }
 
+    private void restoreTopic(@NonNull String title, int rating) {
+        clearDisposableSafe(disposableCreateTopic);
+        disposableCreateTopic = createTopic(title, rating);
+    }
+
+    private Disposable createTopic(@NonNull String title, int rating) {
+        return repoTopics
+                .createTopic(title, rating)
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(disposable -> {
+                    itemCreatedLiveData.setValue(Resource.loading(null));
+                })
+                .subscribe(resultCreateTopic -> {
+                    Objects.requireNonNull(resultCreateTopic.second);
+                    if (resultCreateTopic.second) {
+                        itemCreatedLiveData.setValue(Resource.success(resultCreateTopic.first, null));
+                    } else {
+                        itemCreatedLiveData.setValue(
+                                Resource.error(
+                                        new ErrorDataTyped<>(app
+                                                .getResources().getString(R.string.error_topic_create),
+                                                ErrorsTopics.NO_ITEM),
+                                        resultCreateTopic.first
+                                )
+                        );
+                    }
+                }, throwable -> Timber.e(throwable));
+    }
+
     @NonNull
     public LiveData<Resource<Long, ErrorDataTyped<ErrorsTopics>>> getDeleteTopicLiveData() {
         return itemRemovedLiveData;
     }
 
+    @NonNull
+    public LiveData<Resource<Long, ErrorDataTyped<ErrorsTopics>>> getRestoreTopicLiveData() {
+        return itemCreatedLiveData;
+    }
+
     public void undoTopicDelete() {
+        commandHolder.current().undo();
+        commandHolder.pop();
     }
 }

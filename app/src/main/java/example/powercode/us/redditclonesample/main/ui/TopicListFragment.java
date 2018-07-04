@@ -274,12 +274,12 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
                     Snackbar
                             .make(binding.getRoot(), R.string.action_item_deleted, Snackbar.LENGTH_LONG)
                             .setAction(R.string.action_undo, v -> viewModel.undoTopicDelete())
-                            .addCallback(new Snackbar.Callback() {
+                            /*.addCallback(new Snackbar.Callback() {
                                 @Override
                                 public void onDismissed(Snackbar snackbar, int event) {
 
                                 }
-                            })
+                            })*/
                             .show();
 
                     break;
