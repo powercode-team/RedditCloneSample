@@ -12,6 +12,7 @@
     <string name="msg_item_deleted">Topic deleted</string>
 
     <string name="action_delete">Delete</string>
+    <string name="msg_no_items">No topics, press \"+\" to create one</string>
 
     <string name="error_topic_with_id_not_found">Topic with id %1$d\nwas not found</string>
 </resources>

@@ -17,18 +17,33 @@
         android:layout_height="match_parent"
         tools:context=".main.ui.TopicListFragment">
 
-        <!--<android.support.v4.widget.NestedScrollView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:fillViewport="true"-->
-        <!--app:layout_behavior="@string/appbar_scrolling_view_behavior">-->
+        <android.support.v4.widget.NestedScrollView
+            android:id="@+id/rc_empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/msg_no_items"
+                    android:textSize="@dimen/font_size_topic_title" />
+            </FrameLayout>
+        </android.support.v4.widget.NestedScrollView>
 
         <!--android:paddingBottom is set programmatically in the fragment to handle FAB size and margins-->
-        <android.support.v7.widget.RecyclerView
+        <example.powercode.us.redditclonesample.common.rv.RecyclerViewEx
             android:id="@+id/rv_topics"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
+            app:emptyView="@id/rc_empty_view"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             tools:listitem="@layout/item_topic" />

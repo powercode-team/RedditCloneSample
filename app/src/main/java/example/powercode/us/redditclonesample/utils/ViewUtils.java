@@ -2,7 +2,9 @@ package example.powercode.us.redditclonesample.utils;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -32,5 +34,19 @@ public final class ViewUtils extends ViewCompat {
             //noinspection deprecation
             v.getViewTreeObserver().removeGlobalOnLayoutListener(victim);
         }
+    }
+
+    @Nullable
+    public static View findViewById(@NonNull View parent, @IdRes int viewId2Find) {
+        while (parent != null) {
+            View targetView = parent.findViewById(viewId2Find);
+            if (targetView != null) {
+                return targetView;
+            }
+
+            parent = (parent.getParent() instanceof View) ? (View)parent.getParent() : null;
+        }
+
+        return null;
     }
 }
