@@ -144,7 +144,7 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
     }
 
     private void setRecyclerViewPaddingToFAB(int extraPaddingBottom) {
-        ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams)binding.fabTopicCreate.getLayoutParams();
+        ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) binding.fabTopicCreate.getLayoutParams();
 
         int bottomPadding = binding.fabTopicCreate.getHeight() + mlp.bottomMargin + extraPaddingBottom;
         ViewUtils.setPaddingRelative(binding.rvTopics, ViewUtils.getPaddingStart(binding.rvTopics),
@@ -197,6 +197,7 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
     protected void onAttachViewModel() {
         viewModel.getTopicsLiveData().observe(this, this::onTopicsFetchedObserver);
         ViewModelAttachHelper.attachObserverIfLoading(viewModel.getDeleteTopicLiveData(), this, deleteTopicObserver);
+        ViewModelAttachHelper.attachObserverIfLoading(viewModel.getRestoreTopicLiveData(), this, restoreDeletedTopicObserver);
         ViewModelAttachHelper.attachObserverIfLoading(viewModel.getApplyVoteLiveData(), this, voteTopicObserver);
     }
 
@@ -205,6 +206,7 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
         viewModel.getTopicsLiveData().removeObservers(this);
         viewModel.getApplyVoteLiveData().removeObservers(this);
         viewModel.getDeleteTopicLiveData().removeObservers(this);
+        viewModel.getRestoreTopicLiveData().removeObservers(this);
     }
 
     @Override
@@ -261,16 +263,20 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
     @NonNull
     private final Observer<Resource<Long, ErrorDataTyped<ErrorsTopics>>> deleteTopicObserver = new Observer<Resource<Long, ErrorDataTyped<ErrorsTopics>>>() {
         @Override
-        public void onChanged(@Nullable Resource<Long, ErrorDataTyped<ErrorsTopics>> deleteTopicIdResource) {
-            Objects.requireNonNull(deleteTopicIdResource);
-            switch (deleteTopicIdResource.status) {
+        public void onChanged(@Nullable Resource<Long, ErrorDataTyped<ErrorsTopics>> deletedTopicIdResource) {
+            Objects.requireNonNull(deletedTopicIdResource);
+            switch (deletedTopicIdResource.status) {
                 case SUCCESS: {
                     viewModel.getDeleteTopicLiveData().removeObserver(this);
                     // Do nothing since notify changes will trigger update
 
                     Snackbar
-                            .make(binding.getRoot(), R.string.action_item_deleted, Snackbar.LENGTH_LONG)
-                            .setAction(R.string.action_undo, v -> viewModel.undoTopicDelete())
+                            .make(binding.getRoot(), R.string.msg_item_deleted, Snackbar.LENGTH_LONG)
+                            .setAction(R.string.action_undo, v -> {
+                                        viewModel.getRestoreTopicLiveData().observe(TopicListFragment.this, restoreDeletedTopicObserver);
+                                        viewModel.undoTopicDelete();
+                                    }
+                            )
                             /*.addCallback(new Snackbar.Callback() {
                                 @Override
                                 public void onDismissed(Snackbar snackbar, int event) {
@@ -283,11 +289,35 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
                 }
                 case ERROR: {
                     viewModel.getDeleteTopicLiveData().removeObserver(this);
-                    Objects.requireNonNull(deleteTopicIdResource.data, "Status.SUCCESS implies data to be set");
-                    final long failedDeleteItemId = deleteTopicIdResource.data;
+                    Objects.requireNonNull(deletedTopicIdResource.data, "Status.SUCCESS implies data to be set");
+                    final long failedDeleteItemId = deletedTopicIdResource.data;
                     int failedDeleteItemPosition = adapter.findItemPosition(topicEntity -> failedDeleteItemId == topicEntity.id);
                     adapter.notifyItemChanged(failedDeleteItemPosition);
 
+                    break;
+                }
+                case LOADING:
+                    break;
+            }
+        }
+    };
+
+    @NonNull
+    private final Observer<Resource<Long, ErrorDataTyped<ErrorsTopics>>> restoreDeletedTopicObserver = new Observer<Resource<Long, ErrorDataTyped<ErrorsTopics>>>() {
+        @Override
+        public void onChanged(@Nullable Resource<Long, ErrorDataTyped<ErrorsTopics>> restoredTopicIdResource) {
+            Objects.requireNonNull(restoredTopicIdResource);
+            switch (restoredTopicIdResource.status) {
+                case SUCCESS: {
+                    viewModel.getRestoreTopicLiveData().removeObserver(this);
+                    Snackbar
+                            .make(binding.getRoot(), R.string.msg_item_restored, Snackbar.LENGTH_SHORT)
+                            .show();
+                    break;
+                }
+
+                case ERROR: {
+                    viewModel.getRestoreTopicLiveData().removeObserver(this);
                     break;
                 }
                 case LOADING:

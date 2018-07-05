@@ -20,7 +20,7 @@ public class CommandDeleteTopic extends CommandBase {
     }
 
     @Override
-    public void execute() {
+    public void run() {
         receiver.deleteTopic(deletedTopic.id);
     }
 

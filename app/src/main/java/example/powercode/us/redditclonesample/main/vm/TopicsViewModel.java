@@ -145,7 +145,7 @@ public class TopicsViewModel extends ViewModel {
     // Exposed to TopicListFragment
     public void topicVote(long id, @NonNull VoteType vt) {
         commandHolder.push(new CommandVoteTopic(receiverCommandVoteTopic, id, vt));
-        commandHolder.current().execute();
+        commandHolder.current().run();
     }
 
     @NonNull
@@ -211,7 +211,7 @@ public class TopicsViewModel extends ViewModel {
                             Objects.requireNonNull(removedTopic);
 
                             commandHolder.push(new CommandDeleteTopic(receiverCommandDelete, removedTopic));
-                            commandHolder.current().execute();
+                            commandHolder.current().run();
                         },
                         Timber::e);
     }

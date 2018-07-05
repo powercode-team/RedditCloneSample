@@ -8,7 +8,9 @@
 
     <string name="title_topic_list">Top topics</string>
 
-    <string name="action_item_deleted">Item deleted</string>
+    <string name="msg_item_restored">Topic restored</string>
+    <string name="msg_item_deleted">Topic deleted</string>
+
     <string name="action_delete">Delete</string>
 
     <string name="error_topic_with_id_not_found">Topic with id %1$d\nwas not found</string>

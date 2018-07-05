@@ -24,7 +24,7 @@ public class CommandVoteTopic extends CommandBase {
     }
 
     @Override
-    public void execute() {
+    public void run() {
         receiver.voteTopic(topicId, vt);
     }
 
