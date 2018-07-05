@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
@@ -19,7 +20,9 @@ import javax.inject.Inject;
 import example.powercode.us.redditclonesample.app.di.scopes.PerApplication;
 import example.powercode.us.redditclonesample.base.error.ErrorDataTyped;
 import example.powercode.us.redditclonesample.common.Algorithms;
+import example.powercode.us.redditclonesample.common.functional.BiFunction;
 import example.powercode.us.redditclonesample.common.functional.Function;
+import example.powercode.us.redditclonesample.common.functional.Predicate;
 import example.powercode.us.redditclonesample.model.common.Resource;
 import example.powercode.us.redditclonesample.model.common.Status;
 import example.powercode.us.redditclonesample.model.entity.EntityActionType;
@@ -63,6 +66,22 @@ public class RepoTopicsImpl implements RepoTopics {
 
         c.clear();
         c.addAll(items);
+    }
+
+    private static <Elem, Container extends Collection<? extends Elem>> boolean insertOrUpdate(@NonNull Container items,
+                                                                                            @NonNull Elem newItem,
+                                                                                            @Nullable Predicate<? super Elem> removeCondition,
+                                                                                            @NonNull BiFunction<Container, Elem, Boolean> operation) {
+        if (removeCondition != null) {
+            Iterator<? extends Elem> it = items.iterator();
+            while (it.hasNext()) {
+                if (removeCondition.test(it.next())) {
+                    it.remove();
+                }
+            }
+        }
+
+        return operation.apply(items, newItem);
     }
 
     private List<TopicEntity> getOriginalTopics() {
@@ -147,6 +166,12 @@ public class RepoTopicsImpl implements RepoTopics {
                     TopicEntity targetTopic = topicResource.data;
                     Objects.requireNonNull(targetTopic, String.format(Locale.getDefault(), "Topic with id %1$d must exist", id));
                     boolean isApplied = doVoteTopic(targetTopic, vt);
+                    if (isApplied) {
+                        insertOrUpdate(getOriginalTopics(),
+                                targetTopic, topicEntity -> targetTopic.id == topicEntity.id,
+                                List::add);
+                    }
+
                     return new Pair<>(targetTopic, isApplied);
                 })
                 .doOnSuccess(topicEntityPack -> {

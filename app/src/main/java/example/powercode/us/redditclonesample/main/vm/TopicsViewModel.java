@@ -20,6 +20,7 @@ import example.powercode.us.redditclonesample.common.arch.SingleLiveEvent;
 import example.powercode.us.redditclonesample.common.patterns.holder.CommandHolder;
 import example.powercode.us.redditclonesample.common.patterns.holder.CommandHolderSingle;
 import example.powercode.us.redditclonesample.main.vm.command.CommandDeleteTopic;
+import example.powercode.us.redditclonesample.main.vm.command.CommandVoteTopic;
 import example.powercode.us.redditclonesample.main.vm.command.ReceiverCommandDelete;
 import example.powercode.us.redditclonesample.main.vm.command.ReceiverCommandVoteTopic;
 import example.powercode.us.redditclonesample.model.common.Resource;
@@ -30,6 +31,7 @@ import example.powercode.us.redditclonesample.model.entity.VoteType;
 import example.powercode.us.redditclonesample.model.error.ErrorsTopics;
 import example.powercode.us.redditclonesample.model.repository.RepoTopics;
 import example.powercode.us.redditclonesample.model.rules.BRulesTopics;
+import example.powercode.us.redditclonesample.utils.RxUtils;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -39,7 +41,7 @@ import timber.log.Timber;
 /**
  * Created by dev for RedditCloneSample on 18-Jun-18.
  */
-public class TopicsViewModel extends ViewModel implements ReceiverCommandDelete, ReceiverCommandVoteTopic {
+public class TopicsViewModel extends ViewModel {
     @NonNull
     private final MutableLiveData<Resource<List<TopicEntity>, ErrorDataTyped<ErrorsTopics>>> topicsLiveData = new MutableLiveData<>();
 
@@ -124,20 +126,15 @@ public class TopicsViewModel extends ViewModel implements ReceiverCommandDelete,
     @Override
     protected void onCleared() {
         super.onCleared();
-        clearDisposableSafe(compositeDisposable);
-        clearDisposableSafe(disposableFindTopicById);
-        clearDisposableSafe(disposableApplyVote);
-        clearDisposableSafe(disposableRemoveTopic);
+        RxUtils.clearDisposableSafe(compositeDisposable);
+        RxUtils.clearDisposableSafe(disposableFindTopicById);
+        RxUtils.clearDisposableSafe(disposableApplyVote);
+        RxUtils.clearDisposableSafe(disposableRemoveTopic);
+        RxUtils.clearDisposableSafe(disposableCreateTopic);
 
         commandHolder.clear();
 
         Timber.d("VM of type [ %s ] was cleared \nid %s", TopicsViewModel.class.getSimpleName(), this);
-    }
-
-    private void clearDisposableSafe(@Nullable Disposable d) {
-        if (d != null && !d.isDisposed()) {
-            d.dispose();
-        }
     }
 
     @NonNull
@@ -145,11 +142,17 @@ public class TopicsViewModel extends ViewModel implements ReceiverCommandDelete,
         return topicsLiveData;
     }
 
-    @Override
-    public void voteTopic(long id, @NonNull VoteType vt) {
-        clearDisposableSafe(disposableApplyVote);
-        disposableApplyVote = applyVoteTopic(id, vt);
+    // Exposed to TopicListFragment
+    public void topicVote(long id, @NonNull VoteType vt) {
+        commandHolder.push(new CommandVoteTopic(receiverCommandVoteTopic, id, vt));
+        commandHolder.current().execute();
     }
+
+    @NonNull
+    private final ReceiverCommandVoteTopic receiverCommandVoteTopic = (id, vt) -> {
+        RxUtils.clearDisposableSafe(disposableApplyVote);
+        disposableApplyVote = applyVoteTopic(id, vt);
+    };
 
     @NonNull
     private Disposable applyVoteTopic(long id, @NonNull VoteType vt) {
@@ -183,8 +186,9 @@ public class TopicsViewModel extends ViewModel implements ReceiverCommandDelete,
         return itemApplyVoteLiveData;
     }
 
+    // Exposed to TopicListFragment
     public void topicDelete(long id) {
-        clearDisposableSafe(disposableFindTopicById);
+        RxUtils.clearDisposableSafe(disposableFindTopicById);
         disposableFindTopicById = repoTopics
                 .getById(id)
                 .doOnSubscribe(disposable -> itemRemovedLiveData.setValue(Resource.loading(id)))
@@ -206,22 +210,25 @@ public class TopicsViewModel extends ViewModel implements ReceiverCommandDelete,
                             TopicEntity removedTopic = topicEntityResource.data;
                             Objects.requireNonNull(removedTopic);
 
-                            commandHolder.push(new CommandDeleteTopic(TopicsViewModel.this, removedTopic));
+                            commandHolder.push(new CommandDeleteTopic(receiverCommandDelete, removedTopic));
                             commandHolder.current().execute();
                         },
                         Timber::e);
     }
 
-    @Override
-    public void deleteTopic(long id) {
-        clearDisposableSafe(disposableRemoveTopic);
-        disposableRemoveTopic = removeTopic(id);
-    }
+    @NonNull
+    private final ReceiverCommandDelete receiverCommandDelete = new ReceiverCommandDelete() {
+        @Override
+        public void deleteTopic(long id) {
+            RxUtils.clearDisposableSafe(disposableRemoveTopic);
+            disposableRemoveTopic = removeTopic(id);
+        }
 
-    @Override
-    public void undoDeleteTopic(@NonNull TopicEntity topic2Restore) {
-        restoreTopic(topic2Restore.title, topic2Restore.getRating());
-    }
+        @Override
+        public void undoDeleteTopic(@NonNull TopicEntity topic2Restore) {
+            restoreTopic(topic2Restore.title, topic2Restore.getRating());
+        }
+    };// ReceiverCommandDelete
 
     private Disposable removeTopic(long id) {
         return repoTopics
@@ -249,7 +256,7 @@ public class TopicsViewModel extends ViewModel implements ReceiverCommandDelete,
     }
 
     private void restoreTopic(@NonNull String title, int rating) {
-        clearDisposableSafe(disposableCreateTopic);
+        RxUtils.clearDisposableSafe(disposableCreateTopic);
         disposableCreateTopic = createTopic(title, rating);
     }
 
@@ -287,6 +294,7 @@ public class TopicsViewModel extends ViewModel implements ReceiverCommandDelete,
         return itemCreatedLiveData;
     }
 
+    // Exposed to TopicListFragment
     public void undoTopicDelete() {
         commandHolder.current().undo();
         commandHolder.pop();

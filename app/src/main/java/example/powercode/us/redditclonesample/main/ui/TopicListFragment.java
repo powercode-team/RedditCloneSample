@@ -7,14 +7,12 @@ import android.databinding.ObservableInt;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +40,6 @@ import example.powercode.us.redditclonesample.model.entity.VoteType;
 import example.powercode.us.redditclonesample.model.error.ErrorsTopics;
 import example.powercode.us.redditclonesample.utils.ViewUtils;
 import io.reactivex.disposables.CompositeDisposable;
-import timber.log.Timber;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -214,7 +211,7 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
     public void onVoteClick(@NonNull View v, int adapterPos, @NonNull VoteType vt) {
         final TopicEntity topic = adapter.getItem(adapterPos);
         viewModel.getApplyVoteLiveData().observe(this, voteTopicObserver);
-        viewModel.voteTopic(topic.id, vt);
+        viewModel.topicVote(topic.id, vt);
     }
 
     @NonNull

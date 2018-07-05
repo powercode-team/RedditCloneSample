@@ -17,6 +17,7 @@ import example.powercode.us.redditclonesample.common.arch.SingleLiveEvent;
 import example.powercode.us.redditclonesample.model.common.Resource;
 import example.powercode.us.redditclonesample.model.error.ErrorsTopics;
 import example.powercode.us.redditclonesample.model.repository.RepoTopics;
+import example.powercode.us.redditclonesample.utils.RxUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -50,20 +51,14 @@ public class TopicCreateViewModel extends ViewModel {
     @Override
     protected void onCleared() {
         super.onCleared();
-        clearDisposableSafe(compositeDisposable);
-        clearDisposableSafe(disposableCreateTopic);
+        RxUtils.clearDisposableSafe(compositeDisposable);
+        RxUtils.clearDisposableSafe(disposableCreateTopic);
 
         Timber.d("VM of type [ %s ] was cleared \nid %s", TopicCreateViewModel.class.getSimpleName(), this);
     }
 
-    private void clearDisposableSafe(@Nullable Disposable d) {
-        if (d != null && !d.isDisposed()) {
-            d.dispose();
-        }
-    }
-
     public void newTopic(@NonNull String title, int rating) {
-        clearDisposableSafe(disposableCreateTopic);
+        RxUtils.clearDisposableSafe(disposableCreateTopic);
         disposableCreateTopic = createTopic(title, rating);
     }
 

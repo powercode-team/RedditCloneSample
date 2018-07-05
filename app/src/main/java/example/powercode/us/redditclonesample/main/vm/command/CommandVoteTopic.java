@@ -4,28 +4,31 @@ import android.support.annotation.NonNull;
 
 import example.powercode.us.redditclonesample.common.patterns.CommandBase;
 import example.powercode.us.redditclonesample.model.entity.TopicEntity;
+import example.powercode.us.redditclonesample.model.entity.VoteType;
 
 /**
  * Created by dev for RedditCloneSample on 03-Jul-18.
  */
-public class CommandDeleteTopic extends CommandBase {
+public class CommandVoteTopic extends CommandBase {
     @NonNull
-    private final ReceiverCommandDelete receiver;
+    private final ReceiverCommandVoteTopic receiver;
 
-    private TopicEntity deletedTopic;
+    private final long topicId;
+    @NonNull
+    private final VoteType vt;
 
-    public CommandDeleteTopic(@NonNull ReceiverCommandDelete r, @NonNull TopicEntity topicEntity) {
+    public CommandVoteTopic(@NonNull ReceiverCommandVoteTopic r, long topicId, @NonNull VoteType vt) {
         this.receiver = r;
-        deletedTopic = topicEntity;
+        this.topicId = topicId;
+        this.vt = vt;
     }
 
     @Override
     public void execute() {
-        receiver.deleteTopic(deletedTopic.id);
+        receiver.voteTopic(topicId, vt);
     }
 
     @Override
     public void undo() {
-        receiver.undoDeleteTopic(deletedTopic);
     }
 }

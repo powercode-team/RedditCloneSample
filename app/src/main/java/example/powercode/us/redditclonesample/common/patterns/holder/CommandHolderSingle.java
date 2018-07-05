@@ -15,7 +15,11 @@ import example.powercode.us.redditclonesample.common.patterns.CommandBase;
  * Created by dev for RedditCloneSample on 03-Jul-18.
  */
 public class CommandHolderSingle extends CommandHolder {
+    private static final int ITEMS_COUNT_TO_HOLD = 1;
+
+    @NonNull
     private final Deque<CommandBase> commands = new ArrayDeque<>();
+
 
     @Inject
     public CommandHolderSingle() {
@@ -23,6 +27,10 @@ public class CommandHolderSingle extends CommandHolder {
 
     @Override
     public void push(@NonNull CommandBase c) {
+        while (!isEmpty() && (size() >= ITEMS_COUNT_TO_HOLD)) {
+            pop();
+        }
+
         commands.push(c);
     }
 
