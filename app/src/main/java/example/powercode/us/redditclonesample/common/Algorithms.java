@@ -82,7 +82,7 @@ public final class Algorithms {
         return -1;
     }
 
-    public static <T> int findIndex(@NonNull List<T> array, @NonNull Predicate<? super T> filter) {
+    public static <T> int findIndex(@NonNull List<? extends T> array, @NonNull Predicate<? super T> filter) {
         for (int i = 0; i < array.size(); i++) {
             if (filter.test(array.get(i))) {
                 return i;

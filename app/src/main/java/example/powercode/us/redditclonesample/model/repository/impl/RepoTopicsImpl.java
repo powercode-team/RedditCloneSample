@@ -68,20 +68,16 @@ public class RepoTopicsImpl implements RepoTopics {
         c.addAll(items);
     }
 
-    private static <Elem, Container extends Collection<? extends Elem>> boolean insertOrUpdate(@NonNull Container items,
+    private static <Elem, Container extends List<Elem>> boolean insertOrUpdate(@NonNull Container items,
                                                                                             @NonNull Elem newItem,
-                                                                                            @Nullable Predicate<? super Elem> removeCondition,
-                                                                                            @NonNull BiFunction<Container, Elem, Boolean> operation) {
-        if (removeCondition != null) {
-            Iterator<? extends Elem> it = items.iterator();
-            while (it.hasNext()) {
-                if (removeCondition.test(it.next())) {
-                    it.remove();
-                }
-            }
+                                                                                            @Nullable Predicate<? super Elem> removeCondition) {
+        int indexItemToUpdate = (removeCondition != null) ? Algorithms.findIndex(items, removeCondition) : -1;
+        if (indexItemToUpdate == -1) {
+            return items.add(newItem);
         }
 
-        return operation.apply(items, newItem);
+        items.set(indexItemToUpdate, newItem);
+        return true;
     }
 
     private List<TopicEntity> getOriginalTopics() {
@@ -168,8 +164,7 @@ public class RepoTopicsImpl implements RepoTopics {
                     boolean isApplied = doVoteTopic(targetTopic, vt);
                     if (isApplied) {
                         insertOrUpdate(getOriginalTopics(),
-                                targetTopic, topicEntity -> targetTopic.id == topicEntity.id,
-                                List::add);
+                                targetTopic, topicEntity -> targetTopic.id == topicEntity.id);
                     }
 
                     return new Pair<>(targetTopic, isApplied);
