@@ -4,10 +4,12 @@
 *.ap_
 
 # Files for the ART/Dalvik VM
-*.dex
+#is covered by build/
+#*.dex
 
 # Java class files
-*.class
+#is covered by build/
+#*.class
 
 # Generated files
 bin/
@@ -78,7 +80,8 @@ fabric.properties
 ### Intellij+iml Patch ###
 # Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-249601023 
 
-modules.xml
+#is covered by .idea/
+#modules.xml
 *.ipr
 
 
