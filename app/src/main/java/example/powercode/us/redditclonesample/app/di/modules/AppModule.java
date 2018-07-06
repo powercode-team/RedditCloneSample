@@ -20,12 +20,7 @@ import example.powercode.us.redditclonesample.model.di.ReposModule;
  */
 @Module (includes = {AndroidSupportInjectionModule.class, ContributorsModule.class, ViewModelModule.class, ReposModule.class})
 public interface AppModule {
-    @PerApplication
-    @Provides
-    static @NonNull RefWatcher provideRefWatcher(@NonNull TheApp app) {
-        return app.getAppRefWatcher();
-    }
-
+    // Bind in AppComponent
 //    @PerApplication
 //    @Binds
 //    Application bindApplication(@NonNull TheApp app);

@@ -1,16 +1,12 @@
 package example.powercode.us.redditclonesample.app;
 
-import android.app.Activity;
-import android.app.Application;
-
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjector;
-import dagger.android.DispatchingAndroidInjector;
-import dagger.android.HasActivityInjector;
+import dagger.android.support.DaggerApplication;
 import example.powercode.us.redditclonesample.BuildConfig;
 import example.powercode.us.redditclonesample.app.di.DaggerAppComponent;
 import timber.log.Timber;
@@ -18,12 +14,10 @@ import timber.log.Timber;
 /**
  * Created by dev for RedditCloneSample on 12-Jun-18.
  */
-public final class TheApp extends Application implements HasActivityInjector {
-
-    private RefWatcher appRefWatcher;
+public final class TheApp extends DaggerApplication {
 
     @Inject
-    DispatchingAndroidInjector<Activity> activityInjector;
+    RefWatcher appRefWatcher;
 
     @Override
     public void onCreate() {
@@ -35,25 +29,16 @@ public final class TheApp extends Application implements HasActivityInjector {
             return;
         }
 
-        appRefWatcher = LeakCanary.install(this);
-
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
         }
-
-        DaggerAppComponent
-                .builder()
-                .application(this)
-                .create(this)
-                .inject(this);
     }
 
     @Override
-    public AndroidInjector<Activity> activityInjector() {
-        return activityInjector;
-    }
-
-    public RefWatcher getAppRefWatcher() {
-        return appRefWatcher;
+    protected AndroidInjector<? extends DaggerApplication> applicationInjector() {
+        return DaggerAppComponent
+                .builder()
+                .application(this)
+                .create(this);
     }
 }
