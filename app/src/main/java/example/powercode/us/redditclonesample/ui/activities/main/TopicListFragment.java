@@ -28,18 +28,12 @@ import example.powercode.us.redditclonesample.databinding.FragmentTopicListBindi
 import example.powercode.us.redditclonesample.model.common.Resource;
 import example.powercode.us.redditclonesample.model.entity.TopicEntity;
 import example.powercode.us.redditclonesample.model.entity.VoteType;
-import example.powercode.us.redditclonesample.model.error.ErrorsTopics;
 import example.powercode.us.redditclonesample.ui.activities.base.common.DefaultTagGenerator;
 import example.powercode.us.redditclonesample.ui.activities.base.common.HasFragmentTag;
-import example.powercode.us.redditclonesample.ui.activities.base.error.ErrorDataTyped;
 import example.powercode.us.redditclonesample.ui.activities.base.fragments.BaseViewModelFragment;
 import example.powercode.us.redditclonesample.ui.activities.base.vm.ViewModelAttachHelper;
 import example.powercode.us.redditclonesample.ui.activities.main.vm.TopicsViewModel;
 import example.powercode.us.redditclonesample.ui.utils.AbstractOnClickListener;
-
-import static example.powercode.us.redditclonesample.model.common.Status.ERROR;
-import static example.powercode.us.redditclonesample.model.common.Status.LOADING;
-import static example.powercode.us.redditclonesample.model.common.Status.SUCCESS;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -269,7 +263,7 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel>
 
         private final WeakReference<OnInteractionListener> listenerRef;
 
-        public OnClickListenerImpl(final OnInteractionListener listener) {
+        OnClickListenerImpl(final OnInteractionListener listener) {
             this.listenerRef = new WeakReference<>(listener);
         }
 
