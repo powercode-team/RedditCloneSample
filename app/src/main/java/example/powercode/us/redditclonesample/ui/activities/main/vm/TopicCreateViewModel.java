@@ -1,25 +1,19 @@
 package example.powercode.us.redditclonesample.ui.activities.main.vm;
 
-import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 
-import java.util.Objects;
+import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
-import example.powercode.us.redditclonesample.R;
-import example.powercode.us.redditclonesample.ui.activities.base.error.ErrorDataTyped;
+import example.powercode.us.redditclonesample.app.managers.AppAsyncManager;
 import example.powercode.us.redditclonesample.common.arch.SingleLiveEvent;
 import example.powercode.us.redditclonesample.model.common.Resource;
-import example.powercode.us.redditclonesample.model.error.ErrorsTopics;
 import example.powercode.us.redditclonesample.model.repository.RepoTopics;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
 
 /**
@@ -27,72 +21,54 @@ import timber.log.Timber;
  */
 public class TopicCreateViewModel extends ViewModel {
     @NonNull
-    private final MutableLiveData<Resource<Long, ErrorDataTyped<ErrorsTopics>>> itemChangedLiveData = new SingleLiveEvent<>();
-
-    @NonNull
-    private final Application app;
+    private final MutableLiveData<Resource<Long>> itemChangedLiveData = new SingleLiveEvent<>();
 
     @NonNull
     private final RepoTopics repoTopics;
-
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
-
-    @Nullable
-    private Disposable disposableCreateTopic = null;
+    @NonNull
+    private final AppAsyncManager asyncManager;
 
     @Inject
-    TopicCreateViewModel(@NonNull Application app, @NonNull RepoTopics repoTopics) {
-        this.app = app;
+    TopicCreateViewModel(
+            @NonNull RepoTopics repoTopics,
+            @NonNull AppAsyncManager asyncManager) {
         this.repoTopics = repoTopics;
+        this.asyncManager = asyncManager;
         Timber.d("VM of type [ %s ] constructor called \nid %s", TopicCreateViewModel.class.getSimpleName(), this);
     }
 
-    @Override
-    protected void onCleared() {
-        super.onCleared();
-        clearDisposable(compositeDisposable);
-        clearDisposable(disposableCreateTopic);
-
-        Timber.d("VM of type [ %s ] was cleared \nid %s", TopicCreateViewModel.class.getSimpleName(), this);
-    }
-
-    private void clearDisposable(@Nullable Disposable d) {
-        if (d != null && !d.isDisposed()) {
-            d.dispose();
-        }
-    }
-
     public void newTopic(@NonNull String title, int rating) {
-        clearDisposable(disposableCreateTopic);
-        disposableCreateTopic = createTopic(title, rating);
-    }
-
-    private Disposable createTopic(@NonNull String title, int rating) {
-        return repoTopics
-                .createTopic(title, rating)
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(disposable -> {
-                    itemChangedLiveData.setValue(Resource.loading(null));
-                })
-                .subscribe(resultCreateTopic -> {
-                    Objects.requireNonNull(resultCreateTopic.second);
-                    if (resultCreateTopic.second) {
-                        itemChangedLiveData.setValue(Resource.success(resultCreateTopic.first, null));
-                    } else {
-                        itemChangedLiveData.setValue(
-                                Resource.error(
-                                        new ErrorDataTyped<>(app
-                                                .getResources().getString(R.string.error_topic_create),
-                                                ErrorsTopics.NO_ITEM),
-                                        resultCreateTopic.first
-                                )
-                        );
-                    }
-                }, throwable -> Timber.e(throwable));
+        itemChangedLiveData.setValue(Resource.loading(null));
+        asyncManager.async(new CreateTopicCallable(repoTopics, title, rating), itemChangedLiveData);
     }
 
     @NonNull
-    public LiveData<Resource<Long, ErrorDataTyped<ErrorsTopics>>> getCreateTopicLiveData() {
+    public LiveData<Resource<Long>> getCreateTopicLiveData() {
         return itemChangedLiveData;
+    }
+
+    private static class CreateTopicCallable implements Callable<Resource<Long>> {
+
+        private final RepoTopics repoTopics;
+        private final String title;
+        private final int rating;
+
+        CreateTopicCallable(
+                final RepoTopics repoTopics,
+                final String title,
+                final int rating) {
+            this.repoTopics = repoTopics;
+            this.title = title;
+            this.rating = rating;
+        }
+
+        @Override
+        public Resource<Long> call() throws Exception {
+            final Pair<Long, Boolean> pair = repoTopics.createTopic(title, rating);
+            if (pair.second) {
+                return Resource.success(pair.first);
+            }
+            throw new TopicNotFoundException(pair.first);
+        }
     }
 }

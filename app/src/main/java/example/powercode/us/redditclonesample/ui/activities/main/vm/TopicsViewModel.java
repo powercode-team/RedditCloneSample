@@ -1,195 +1,168 @@
 package example.powercode.us.redditclonesample.ui.activities.main.vm;
 
-import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
-import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
-import example.powercode.us.redditclonesample.R;
-import example.powercode.us.redditclonesample.ui.activities.base.error.ErrorDataTyped;
+import example.powercode.us.redditclonesample.app.managers.AppAsyncManager;
 import example.powercode.us.redditclonesample.common.arch.SingleLiveEvent;
 import example.powercode.us.redditclonesample.model.common.Resource;
 import example.powercode.us.redditclonesample.model.entity.EntityActionType;
 import example.powercode.us.redditclonesample.model.entity.TopicEntity;
 import example.powercode.us.redditclonesample.model.entity.VoteType;
-import example.powercode.us.redditclonesample.model.error.ErrorsTopics;
 import example.powercode.us.redditclonesample.model.repository.RepoTopics;
 import example.powercode.us.redditclonesample.model.rules.BRulesTopics;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
 
 /**
  * Created by dev for RedditCloneSample on 18-Jun-18.
  */
-public class TopicsViewModel extends ViewModel {
+public class TopicsViewModel extends ViewModel implements RepoTopics.OnTopicChangeListener {
     @NonNull
-    private final MutableLiveData<Resource<List<TopicEntity>, ErrorDataTyped<ErrorsTopics>>> topicsLiveData = new MutableLiveData<>();
-
+    private final MutableLiveData<Resource<List<TopicEntity>>> topicsLiveData = new MutableLiveData<>();
     @NonNull
-    private final MutableLiveData<Resource<Long, ErrorDataTyped<ErrorsTopics>>> itemChangedLiveData = new SingleLiveEvent<>();
-
+    private final MutableLiveData<Resource<Long>> itemChangedLiveData = new SingleLiveEvent<>();
     @NonNull
-    private final MutableLiveData<Resource<Long, ErrorDataTyped<ErrorsTopics>>> itemRemovedLiveData = new SingleLiveEvent<>();
-
-    @NonNull
-    private final Application app;
+    private final MutableLiveData<Resource<Long>> itemRemovedLiveData = new SingleLiveEvent<>();
 
     @NonNull
     private final RepoTopics repoTopics;
-
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
-    @Nullable
-    private Disposable disposableApplyVote = null;
-
-    @Nullable
-    private Disposable disposableRemoveTopic = null;
+    private final AppAsyncManager asyncManager;
 
     @Inject
-    TopicsViewModel(@NonNull Application app, @NonNull RepoTopics repoTopics) {
-        this.app = app;
+    TopicsViewModel(
+            @NonNull RepoTopics repoTopics,
+            @NonNull AppAsyncManager asyncManager) {
         this.repoTopics = repoTopics;
+        this.asyncManager = asyncManager;
         Timber.d("VM of type [ %s ] constructor called \nid %s", TopicsViewModel.class.getSimpleName(), this);
 
         topicsLiveData.setValue(Resource.loading(null));
 
-        subscribeToTopicChanges(repoTopics.onTopicChangeObservable());
-
+        repoTopics.setOnTopicChangeListener(this);
         refreshTopics();
     }
 
-    private void subscribeToTopicChanges(@NonNull Observable<Pair<TopicEntity, EntityActionType>> topicChangesObservable) {
-        compositeDisposable.add(topicChangesObservable
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(topicChanges -> {
-//                    if (topicChanges.second == EntityActionType.INSERTED
-//                            || topicChanges.second == EntityActionType.DELETED) {
-                    refreshTopics();
-//                    }
-                }, Timber::e));
+    @Override
+    public void onTopicChange(
+            final TopicEntity entity,
+            final EntityActionType type) {
+        refreshTopics();
     }
 
-    @NonNull
-    private Disposable fetchTopics(@IntRange(from = 0, to = Integer.MAX_VALUE) int count) {
-        return repoTopics
-                .fetchTopics(BRulesTopics.TOPICS_LIST_COMPARATOR, count)
-                .doOnSubscribe(disposable -> {
-                    List<TopicEntity> oldValue = topicsLiveData.getValue() != null ? topicsLiveData.getValue().data : null;
-                    topicsLiveData.setValue(Resource.loading(oldValue));
-                })
-//                .doOnSuccess(listTopicsResource -> {
-//                    if (listTopicsResource.status == Status.SUCCESS && listTopicsResource.data != null) {
-//                        Timber.d("Fetched array:\n\t%s\n", Arrays.toString(listTopicsResource.data.toArray(new TopicEntity[0])));
-//                    }
-//                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(topicsLiveData::setValue,
-                        throwable -> Timber.e(throwable));
+    private void refreshTopics(final int count) {
+        List<TopicEntity> oldValue = topicsLiveData.getValue() != null
+                ? topicsLiveData.getValue().data : null;
+        topicsLiveData.postValue(Resource.loading(oldValue));
+
+        asyncManager.async(new FetchTopicsCallable(repoTopics, count), topicsLiveData);
     }
 
     private void refreshTopics() {
-        compositeDisposable.add(fetchTopics(BRulesTopics.TOPICS_COUNT_WORKING_SET));
+        refreshTopics(BRulesTopics.TOPICS_COUNT_WORKING_SET);
     }
 
     @Override
     protected void onCleared() {
         super.onCleared();
-        clearDisposable(compositeDisposable);
+        repoTopics.setOnTopicChangeListener(null);
 
         Timber.d("VM of type [ %s ] was cleared \nid %s", TopicsViewModel.class.getSimpleName(), this);
     }
 
-    private void clearDisposable(@Nullable Disposable d) {
-        if (d != null && !d.isDisposed()) {
-            d.dispose();
-        }
-    }
-
     @NonNull
-    public LiveData<Resource<List<TopicEntity>, ErrorDataTyped<ErrorsTopics>>> getTopicsLiveData() {
+    public LiveData<Resource<List<TopicEntity>>> getTopicsLiveData() {
         return topicsLiveData;
     }
 
     public void voteTopic(long id, @NonNull VoteType vt) {
-        clearDisposable(disposableApplyVote);
-        disposableApplyVote = applyVoteTopic(id, vt);
+        itemChangedLiveData.postValue(Resource.loading(id));
+        asyncManager.async(new VoteTopicCallable(repoTopics, id, vt), itemChangedLiveData);
     }
 
     @NonNull
-    private Disposable applyVoteTopic(long id, @NonNull VoteType vt) {
-        return repoTopics
-                .applyVoteToTopic(id, vt)
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(disposable -> {
-                    itemChangedLiveData.setValue(Resource.loading(id));
-                })
-                .subscribe(resultAppliedVote -> {
-//                    Timber.d("Vote applied with result: %b", isApplied);
-                    Objects.requireNonNull(resultAppliedVote.second);
-                    if (resultAppliedVote.second) {
-                        itemChangedLiveData.setValue(Resource.success(resultAppliedVote.first, null));
-                    } else {
-                        itemChangedLiveData.setValue(
-                                Resource.error(
-                                        new ErrorDataTyped<>(app
-                                                .getResources()
-                                                .getString(R.string.error_topic_with_id_not_found, resultAppliedVote.first),
-                                                ErrorsTopics.NO_ITEM),
-                                        resultAppliedVote.first
-                                )
-                        );
-                    }
-                }, throwable -> Timber.e(throwable));
-    }
-
-    @NonNull
-    public LiveData<Resource<Long, ErrorDataTyped<ErrorsTopics>>> getApplyVoteLiveData() {
+    public LiveData<Resource<Long>> getApplyVoteLiveData() {
         return itemChangedLiveData;
     }
 
     public void deleteTopic(long id) {
-        clearDisposable(disposableRemoveTopic);
-        disposableRemoveTopic = removeTopic(id);
-    }
-
-    private Disposable removeTopic(long id) {
-        return repoTopics
-                .removeTopic(id)
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(disposable -> {
-                    itemRemovedLiveData.setValue(Resource.loading(id));
-                })
-                .subscribe(resultRemovedTopic -> {
-                    Objects.requireNonNull(resultRemovedTopic.second);
-                    if (resultRemovedTopic.second) {
-                        itemRemovedLiveData.setValue(Resource.success(resultRemovedTopic.first, null));
-                    } else {
-                        itemRemovedLiveData.setValue(
-                                Resource.error(
-                                        new ErrorDataTyped<>(app
-                                                .getResources()
-                                                .getString(R.string.error_topic_with_id_not_found, resultRemovedTopic.first),
-                                                ErrorsTopics.NO_ITEM),
-                                        resultRemovedTopic.first
-                                )
-                        );
-                    }
-                }, throwable -> Timber.e(throwable));
+        itemRemovedLiveData.postValue(Resource.loading(id));
+        asyncManager.async(new RemoveTopicCallable(repoTopics, id), itemRemovedLiveData);
     }
 
     @NonNull
-    public LiveData<Resource<Long, ErrorDataTyped<ErrorsTopics>>> getDeleteTopicLiveData() {
+    public LiveData<Resource<Long>> getDeleteTopicLiveData() {
         return itemRemovedLiveData;
     }
+
+    private static class FetchTopicsCallable implements Callable<Resource<List<TopicEntity>>> {
+
+        private final RepoTopics repoTopics;
+        private final int count;
+
+        FetchTopicsCallable(final RepoTopics repoTopics, final int count) {
+            this.repoTopics = repoTopics;
+            this.count = count;
+        }
+
+        @Override
+        public Resource<List<TopicEntity>> call() throws Exception {
+            return repoTopics.fetchTopics(BRulesTopics.TOPICS_LIST_COMPARATOR, count);
+        }
+    }
+
+    private static class VoteTopicCallable implements Callable<Resource<Long>> {
+
+        private final RepoTopics repoTopics;
+        private final long id;
+        private final VoteType voteType;
+
+        VoteTopicCallable(
+                final RepoTopics repoTopics,
+                final long id,
+                final VoteType voteType) {
+            this.repoTopics = repoTopics;
+            this.id = id;
+            this.voteType = voteType;
+        }
+
+        @Override
+        public Resource<Long> call() throws Exception {
+            final Pair<Long, Boolean> pair = repoTopics.applyVoteToTopic(id, voteType);
+            if (pair.second) {
+                return Resource.success(pair.first);
+            }
+            throw new TopicNotFoundException(pair.first);
+        }
+    }
+
+    private static class RemoveTopicCallable implements Callable<Resource<Long>> {
+
+        private final RepoTopics repoTopics;
+        private final long id;
+
+        RemoveTopicCallable(
+                final RepoTopics repoTopics,
+                final long id) {
+            this.repoTopics = repoTopics;
+            this.id = id;
+        }
+
+        @Override
+        public Resource<Long> call() throws Exception {
+            final Pair<Long, Boolean> pair = repoTopics.removeTopic(id);
+            if (pair.second) {
+                return Resource.success(pair.first);
+            }
+            throw new TopicNotFoundException(pair.first);
+        }
+    }
+
 }

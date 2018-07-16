@@ -11,31 +11,26 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.jakewharton.rxbinding2.view.RxView;
-
 import java.lang.ref.WeakReference;
 import java.util.Objects;
 
 import javax.inject.Inject;
 
 import example.powercode.us.redditclonesample.R;
-import example.powercode.us.redditclonesample.ui.activities.base.error.ErrorDataTyped;
-import example.powercode.us.redditclonesample.ui.activities.base.common.DefaultTagGenerator;
-import example.powercode.us.redditclonesample.ui.activities.base.common.HasFragmentTag;
-import example.powercode.us.redditclonesample.ui.activities.base.fragments.BaseViewModelFragment;
-import example.powercode.us.redditclonesample.ui.activities.base.vm.ViewModelAttachHelper;
 import example.powercode.us.redditclonesample.common.ParamPredicate;
 import example.powercode.us.redditclonesample.common.functional.Predicate;
 import example.powercode.us.redditclonesample.databinding.FragmentTopicCreateBinding;
-import example.powercode.us.redditclonesample.ui.activities.main.vm.TopicCreateViewModel;
 import example.powercode.us.redditclonesample.model.common.Resource;
 import example.powercode.us.redditclonesample.model.error.ErrorsTopics;
 import example.powercode.us.redditclonesample.model.rules.BRulesTopics;
+import example.powercode.us.redditclonesample.ui.activities.base.common.DefaultTagGenerator;
+import example.powercode.us.redditclonesample.ui.activities.base.common.HasFragmentTag;
+import example.powercode.us.redditclonesample.ui.activities.base.error.ErrorDataTyped;
+import example.powercode.us.redditclonesample.ui.activities.base.fragments.BaseViewModelFragment;
+import example.powercode.us.redditclonesample.ui.activities.base.vm.ViewModelAttachHelper;
+import example.powercode.us.redditclonesample.ui.activities.main.vm.TopicCreateViewModel;
 import example.powercode.us.redditclonesample.ui.utils.AbstractOnClickListener;
 import example.powercode.us.redditclonesample.ui.utils.UserInputUtils;
-import io.reactivex.Maybe;
-import io.reactivex.Single;
-import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -139,9 +134,9 @@ public class TopicCreateFragment extends BaseViewModelFragment<TopicCreateViewMo
     }
 
     @NonNull
-    private final Observer<Resource<Long, ErrorDataTyped<ErrorsTopics>>> createTopicObserver = new Observer<Resource<Long, ErrorDataTyped<ErrorsTopics>>>() {
+    private final Observer<Resource<Long>> createTopicObserver = new Observer<Resource<Long>>() {
         @Override
-        public void onChanged(@Nullable Resource<Long, ErrorDataTyped<ErrorsTopics>> createdTopicIdResource) {
+        public void onChanged(@Nullable Resource<Long> createdTopicIdResource) {
             Objects.requireNonNull(createdTopicIdResource);
             switch (createdTopicIdResource.status) {
                 case SUCCESS: {

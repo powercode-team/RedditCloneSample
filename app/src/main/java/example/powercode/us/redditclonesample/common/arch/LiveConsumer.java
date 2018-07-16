@@ -1,6 +1,5 @@
 package example.powercode.us.redditclonesample.common.arch;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 
 import example.powercode.us.redditclonesample.common.functional.Consumer;

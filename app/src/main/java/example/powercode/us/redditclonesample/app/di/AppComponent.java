@@ -1,9 +1,5 @@
 package example.powercode.us.redditclonesample.app.di;
 
-import android.app.Application;
-import android.support.annotation.NonNull;
-
-import dagger.BindsInstance;
 import dagger.Component;
 import dagger.android.AndroidInjector;
 import example.powercode.us.redditclonesample.app.TheApp;

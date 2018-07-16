@@ -1,13 +1,11 @@
 package example.powercode.us.redditclonesample.common.arch;
 
-import android.arch.core.internal.SafeIterableMap;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.SparseArray;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +29,7 @@ public class SingleLiveEvent<T> extends MutableLiveData<T> {
 
     private Map<Integer, Observer<T>> internalObserverWrappers = new HashMap<>();
 
+    // TODO Breaks Barbara Liskov principle
     @MainThread
     public void observe(@NonNull LifecycleOwner owner, @NonNull final Observer<T> observer) {
         if (hasActiveObservers()) {

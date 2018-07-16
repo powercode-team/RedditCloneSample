@@ -8,8 +8,8 @@ import android.support.annotation.NonNull;
 import javax.inject.Inject;
 
 import example.powercode.us.redditclonesample.R;
-import example.powercode.us.redditclonesample.ui.activities.base.BaseViewModelFragmentActivity;
 import example.powercode.us.redditclonesample.databinding.ActivityMainBinding;
+import example.powercode.us.redditclonesample.ui.activities.base.BaseViewModelFragmentActivity;
 import example.powercode.us.redditclonesample.ui.activities.main.vm.MainViewModel;
 import timber.log.Timber;
 

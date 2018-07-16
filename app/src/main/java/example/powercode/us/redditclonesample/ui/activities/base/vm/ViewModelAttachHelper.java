@@ -13,10 +13,9 @@ import example.powercode.us.redditclonesample.model.common.Status;
  * Created by dev for RedditCloneSample on 26-Jun-18.
  */
 public interface ViewModelAttachHelper {
-    static <R extends Resource<?, ?>, LD extends LiveData<R>> boolean attachObserverIf(@NonNull LD observable,
-                                                                                       @NonNull Predicate<R> condition,
-                                                                                       @NonNull LifecycleOwner owner,
-                                                                                       Observer<R> observer) {
+    static <R extends Resource<?>, LD extends LiveData<R>> boolean attachObserverIf(
+            @NonNull LD observable, @NonNull Predicate<R> condition,
+            @NonNull LifecycleOwner owner, Observer<R> observer) {
         if (condition.test(observable.getValue())) {
             observable.observe(owner, observer);
             return true;
@@ -25,9 +24,8 @@ public interface ViewModelAttachHelper {
         return false;
     }
 
-    static <T extends Resource<?, ?>, LD extends LiveData<T>> boolean attachObserverIfLoading(@NonNull LD observable,
-                                                                                             @NonNull LifecycleOwner owner,
-                                                                                             Observer<T> observer) {
+    static <T extends Resource<?>, LD extends LiveData<T>> boolean attachObserverIfLoading(
+            @NonNull LD observable, @NonNull LifecycleOwner owner, Observer<T> observer) {
         return attachObserverIf(observable,
                 res -> res != null && res.status == Status.LOADING,
                 owner, observer);

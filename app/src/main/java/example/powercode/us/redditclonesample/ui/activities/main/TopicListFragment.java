@@ -16,8 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.jakewharton.rxbinding2.view.RxView;
-
+import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,18 +24,22 @@ import javax.inject.Inject;
 
 import example.powercode.us.redditclonesample.R;
 import example.powercode.us.redditclonesample.app.di.qualifiers.ActivityContext;
-import example.powercode.us.redditclonesample.ui.activities.base.error.ErrorDataTyped;
-import example.powercode.us.redditclonesample.ui.activities.base.common.DefaultTagGenerator;
-import example.powercode.us.redditclonesample.ui.activities.base.common.HasFragmentTag;
-import example.powercode.us.redditclonesample.ui.activities.base.fragments.BaseViewModelFragment;
-import example.powercode.us.redditclonesample.ui.activities.base.vm.ViewModelAttachHelper;
 import example.powercode.us.redditclonesample.databinding.FragmentTopicListBinding;
-import example.powercode.us.redditclonesample.ui.activities.main.vm.TopicsViewModel;
 import example.powercode.us.redditclonesample.model.common.Resource;
 import example.powercode.us.redditclonesample.model.entity.TopicEntity;
 import example.powercode.us.redditclonesample.model.entity.VoteType;
 import example.powercode.us.redditclonesample.model.error.ErrorsTopics;
-import io.reactivex.disposables.CompositeDisposable;
+import example.powercode.us.redditclonesample.ui.activities.base.common.DefaultTagGenerator;
+import example.powercode.us.redditclonesample.ui.activities.base.common.HasFragmentTag;
+import example.powercode.us.redditclonesample.ui.activities.base.error.ErrorDataTyped;
+import example.powercode.us.redditclonesample.ui.activities.base.fragments.BaseViewModelFragment;
+import example.powercode.us.redditclonesample.ui.activities.base.vm.ViewModelAttachHelper;
+import example.powercode.us.redditclonesample.ui.activities.main.vm.TopicsViewModel;
+import example.powercode.us.redditclonesample.ui.utils.AbstractOnClickListener;
+
+import static example.powercode.us.redditclonesample.model.common.Status.ERROR;
+import static example.powercode.us.redditclonesample.model.common.Status.LOADING;
+import static example.powercode.us.redditclonesample.model.common.Status.SUCCESS;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -46,8 +49,8 @@ import io.reactivex.disposables.CompositeDisposable;
  * Use the {@link TopicListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> implements HasFragmentTag,
-        TopicsAdapter.InteractionListener {
+public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel>
+        implements HasFragmentTag, TopicsAdapter.InteractionListener {
     public static final String FRAGMENT_TAG = DefaultTagGenerator.generate(TopicListFragment.class);
 
     @NonNull
@@ -66,8 +69,6 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
     TopicsAdapter adapter;
 
     private FragmentTopicListBinding binding;
-
-    private CompositeDisposable uiInputDisposable;
 
     @NonNull
     private final ObservableInt topicsCount = new ObservableInt(0);
@@ -109,16 +110,7 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
                 new TopicsTouchHelper(0, ItemTouchHelper.LEFT, swipeInteractionListener)
         );
 
-        uiInputDisposable = new CompositeDisposable();
-        assignListeners(uiInputDisposable);
-    }
-
-    private void assignListeners(@NonNull CompositeDisposable uiInputDisposable) {
-        uiInputDisposable.add(
-                RxView.clicks(binding.fabTopicCreate)
-//                        .takeUntil(RxView.detaches(binding.fabTopicCreate))
-                        .subscribe(o -> listener.onCreateNewTopic())
-        );
+        binding.fabTopicCreate.setOnClickListener(new OnClickListenerImpl(listener));
     }
 
     private void setupTopicsRecyclerView(@Nullable RecyclerView.Adapter adapter,
@@ -132,7 +124,7 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
         new ItemTouchHelper(callback).attachToRecyclerView(binding.rvTopics);
     }
 
-    private void onTopicsFetchedObserver(@NonNull Resource<List<TopicEntity>, ErrorDataTyped<ErrorsTopics>> resTopics) {
+    private void onTopicsFetchedObserver(@NonNull Resource<List<TopicEntity>> resTopics) {
         switch (resTopics.status) {
             case SUCCESS: {
                 adapter.submitItems(resTopics.data);
@@ -153,12 +145,6 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
                 // TODO: display loading
                 break;
         }
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        uiInputDisposable.dispose();
     }
 
     @Override
@@ -195,9 +181,9 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
     }
 
     @NonNull
-    private final Observer<Resource<Long, ErrorDataTyped<ErrorsTopics>>> voteTopicObserver = new Observer<Resource<Long, ErrorDataTyped<ErrorsTopics>>>() {
+    private final Observer<Resource<Long>> voteTopicObserver = new Observer<Resource<Long>>() {
         @Override
-        public void onChanged(@Nullable Resource<Long, ErrorDataTyped<ErrorsTopics>> votedTopicIdResource) {
+        public void onChanged(@Nullable Resource<Long> votedTopicIdResource) {
             Objects.requireNonNull(votedTopicIdResource);
             switch (votedTopicIdResource.status) {
                 case SUCCESS: {
@@ -239,9 +225,9 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
     };
 
     @NonNull
-    private final Observer<Resource<Long, ErrorDataTyped<ErrorsTopics>>> deleteTopicObserver = new Observer<Resource<Long, ErrorDataTyped<ErrorsTopics>>>() {
+    private final Observer<Resource<Long>> deleteTopicObserver = new Observer<Resource<Long>>() {
         @Override
-        public void onChanged(@Nullable Resource<Long, ErrorDataTyped<ErrorsTopics>> deleteTopicIdResource) {
+        public void onChanged(@Nullable Resource<Long> deleteTopicIdResource) {
             Objects.requireNonNull(deleteTopicIdResource);
             switch (deleteTopicIdResource.status) {
                 case SUCCESS: {
@@ -277,5 +263,26 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel> im
      */
     public interface OnInteractionListener {
         void onCreateNewTopic();
+    }
+
+    private static class OnClickListenerImpl extends AbstractOnClickListener {
+
+        private final WeakReference<OnInteractionListener> listenerRef;
+
+        public OnClickListenerImpl(final OnInteractionListener listener) {
+            this.listenerRef = new WeakReference<>(listener);
+        }
+
+        @Override
+        public void _onClick(final View v) {
+            final OnInteractionListener listener = listenerRef.get();
+            if (listener == null) {
+                return;
+            }
+            final int id = v.getId();
+            if (id == R.id.fab_topic_create) {
+                listener.onCreateNewTopic();
+            }
+        }
     }
 }

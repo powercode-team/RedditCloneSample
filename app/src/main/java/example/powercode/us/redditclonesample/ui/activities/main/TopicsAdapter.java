@@ -18,14 +18,14 @@ import java.util.Objects;
 import javax.inject.Inject;
 
 import example.powercode.us.redditclonesample.R;
-import example.powercode.us.redditclonesample.ui.activities.base.CanBind;
-import example.powercode.us.redditclonesample.ui.activities.base.DataBindingViewHolder;
 import example.powercode.us.redditclonesample.common.Algorithms;
 import example.powercode.us.redditclonesample.common.functional.Predicate;
-import example.powercode.us.redditclonesample.databinding.ItemTopicSwipableBinding;
 import example.powercode.us.redditclonesample.databinding.ItemTopicBinding;
+import example.powercode.us.redditclonesample.databinding.ItemTopicSwipableBinding;
 import example.powercode.us.redditclonesample.model.entity.TopicEntity;
 import example.powercode.us.redditclonesample.model.entity.VoteType;
+import example.powercode.us.redditclonesample.ui.activities.base.CanBind;
+import example.powercode.us.redditclonesample.ui.activities.base.DataBindingViewHolder;
 
 /**
  * Created by dev for RedditCloneSample on 19-Jun-18.
@@ -96,7 +96,8 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ItemViewHo
         }
     };
 
-    static class ItemViewHolder extends DataBindingViewHolder<ItemTopicSwipableBinding> implements CanBind<TopicEntity> {
+    static class ItemViewHolder extends DataBindingViewHolder<ItemTopicSwipableBinding>
+            implements CanBind<TopicEntity>, View.OnClickListener {
         @Nullable
         private InteractionListener listener;
         private final ItemTopicBinding foreground;
@@ -108,8 +109,21 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ItemViewHo
 
             foreground = binding.viewForeground;
             background = binding.viewBackground;
+            foreground.topicRateUp.setOnClickListener(this);
+            foreground.topicRateDown.setOnClickListener(this);
+        }
 
-            assignListener();
+        @Override
+        public void onClick(final View v) {
+            if (listener == null) {
+                return;
+            }
+            final int viewId = v.getId();
+            if (viewId == R.id.topic_rate_up) {
+                listener.onVoteClick(foreground.topicRateUp, getAdapterPosition(), VoteType.UP);
+            } else if (viewId == R.id.topic_rate_down) {
+                listener.onVoteClick(foreground.topicRateDown, getAdapterPosition(), VoteType.DOWN);
+            }
         }
 
         public ItemTopicBinding getForeground() {

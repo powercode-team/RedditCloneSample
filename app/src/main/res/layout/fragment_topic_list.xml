@@ -68,6 +68,6 @@
             app:fabSize="normal"
             app:layout_anchor="@id/rv_topics"
             app:layout_anchorGravity="bottom|end"
-            app:layout_behavior="example.powercode.us.redditclonesample.main.ui.ScrollAwareFloatingActionButtonBehaviour" />
+            app:layout_behavior="example.powercode.us.redditclonesample.ui.activities.main.ScrollAwareFloatingActionButtonBehaviour" />
     </android.support.design.widget.CoordinatorLayout>
 </layout>

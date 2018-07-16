@@ -3,7 +3,6 @@ package example.powercode.us.redditclonesample.ui.activities.base;
 import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
 /**
  * Created by dev for RedditCloneSample on 19-Jun-18.

@@ -9,8 +9,6 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import example.powercode.us.redditclonesample.app.di.scopes.PerActivity;
-
 /**
  * Main view-model creator which allows to inject {@link ViewModel} descendants
  */

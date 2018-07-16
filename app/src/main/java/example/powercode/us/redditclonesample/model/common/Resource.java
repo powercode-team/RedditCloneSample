@@ -9,44 +9,36 @@ import java.util.Objects;
 /**
  * A generic class that holds a value with its loading status.
  * @param <T>
- * @param <E>
  */
 @SuppressWarnings(value = {"WeakerAccess, unused"})
-public class Resource<T, E> {
+public class Resource<T> {
 
     @NonNull
     public final Status status;
-
-//    @Nullable
-//    public final String message;
-
     @Nullable
     public final T data;
+    public final Throwable error;
 
-    @Nullable
-    public final E error;
-
-    public Resource(@NonNull Status status, @Nullable T data, /*@Nullable String message,*/ @Nullable E error) {
+    private Resource(
+            @NonNull Status status,
+            @Nullable T data,
+            @Nullable Throwable error) {
         this.status = status;
         this.data = data;
         this.error = error;
-//        this.message = message;
     }
 
-    public static <T, E> Resource<T, E> success(@Nullable T data, @Nullable E error) {
-        return new Resource<>(Status.SUCCESS, data, /*null,*/ error);
+    public static <T> Resource<T> success(@Nullable T data) {
+        return new Resource<>(Status.SUCCESS, data, null);
     }
 
-    public static <T, E> Resource<T, E> error(/*String msg, */@Nullable E error, @Nullable T data) {
-        return new Resource<>(Status.ERROR, data, /*msg,*/ error);
+    public static <T> Resource<T> error(
+            @Nullable Throwable error) {
+        return new Resource<>(Status.ERROR, null, error);
     }
 
-//    public static <T, E> Resource<T, E> error(String msg, @Nullable E error, @Nullable T data) {
-//        return new Resource<>(ERROR, data, msg, error);
-//    }
-
-    public static <T, E> Resource<T, E> loading(@Nullable T data) {
-        return new Resource<>(Status.LOADING, data, /*null,*/ null);
+    public static <T> Resource<T> loading(@Nullable T data) {
+        return new Resource<>(Status.LOADING, data, null);
     }
 
     @Override
@@ -58,7 +50,7 @@ public class Resource<T, E> {
             return false;
         }
 
-        final Resource<?, ?> resource = (Resource<?, ?>) o;
+        final Resource<?> resource = (Resource<?>) o;
 
         return (status == resource.status)
 //                && ObjectsCompat.equals(message, resource.message)
