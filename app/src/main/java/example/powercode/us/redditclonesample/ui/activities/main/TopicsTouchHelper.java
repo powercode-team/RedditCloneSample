@@ -19,7 +19,7 @@ public final class TopicsTouchHelper extends GenericItemTouchHelperSimpleCallbac
     @NonNull
     private final InteractionListener<RecyclerView, TopicsAdapter.ItemViewHolder> listener;
 
-    TopicsTouchHelper(int dragDirs, int swipeDirs, @NonNull InteractionListener<RecyclerView, TopicsAdapter.ItemViewHolder> listener) {
+    public TopicsTouchHelper(int dragDirs, int swipeDirs, @NonNull InteractionListener<RecyclerView, TopicsAdapter.ItemViewHolder> listener) {
         super(dragDirs, swipeDirs);
         this.listener = listener;
     }

@@ -1,73 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.activities.main.TopicListFragment">
 
-    <data>
-        <import type="android.databinding.ObservableInt"/>
+    <!--<android.support.v4.widget.NestedScrollView-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:fillViewport="true"-->
+    <!--app:layout_behavior="@string/appbar_scrolling_view_behavior">-->
 
-        <variable
-            name="itemsCount"
-            type="ObservableInt"/>
-    </data>
-
-    <android.support.design.widget.CoordinatorLayout
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_topics"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.activities.main.TopicListFragment">
+        android:orientation="vertical"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:listitem="@layout/item_topic" />
 
-        <!--<android.support.v4.widget.NestedScrollView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:fillViewport="true"-->
-        <!--app:layout_behavior="@string/appbar_scrolling_view_behavior">-->
+    <!--</android.support.v4.widget.NestedScrollView>-->
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rv_topics"
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar_topics"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar_topics"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            tools:listitem="@layout/item_topic" />
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:elevation="4dp"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            app:contentInsetEnd="@dimen/toolbar_inset_end"
+            app:contentInsetStart="@dimen/toolbar_inset_start"
+            app:layout_scrollFlags="scroll"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
-        <!--</android.support.v4.widget.NestedScrollView>-->
+            <include
+                android:id="@+id/toolbar_content"
+                layout="@layout/toolbar_topic_list"/>
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
 
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/appbar_topics"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar_topics"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
-                android:elevation="4dp"
-                android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-                app:contentInsetEnd="@dimen/toolbar_inset_end"
-                app:contentInsetStart="@dimen/toolbar_inset_start"
-                app:layout_scrollFlags="scroll"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
-
-                <include
-                    android:id="@+id/toolbar_content"
-                    layout="@layout/toolbar_topic_list"
-                    app:itemsCount="@{itemsCount}"
-                    />
-            </android.support.v7.widget.Toolbar>
-        </android.support.design.widget.AppBarLayout>
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab_topic_create"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/padding_16"
-            android:layout_marginEnd="@dimen/padding_16"
-            android:src="@drawable/ic_add_white_24dp"
-            app:fabSize="normal"
-            app:layout_anchor="@id/rv_topics"
-            app:layout_anchorGravity="bottom|end"
-            app:layout_behavior="example.powercode.us.redditclonesample.ui.activities.main.ScrollAwareFloatingActionButtonBehaviour" />
-    </android.support.design.widget.CoordinatorLayout>
-</layout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_topic_create"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/padding_16"
+        android:layout_marginEnd="@dimen/padding_16"
+        android:src="@drawable/ic_add_white_24dp"
+        app:fabSize="normal"
+        app:layout_anchor="@id/rv_topics"
+        app:layout_anchorGravity="bottom|end"
+        app:layout_behavior="example.powercode.us.redditclonesample.ui.activities.main.ScrollAwareFloatingActionButtonBehaviour" />
+</android.support.design.widget.CoordinatorLayout>

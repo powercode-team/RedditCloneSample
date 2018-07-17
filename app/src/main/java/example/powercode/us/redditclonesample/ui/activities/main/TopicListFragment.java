@@ -1,30 +1,18 @@
 package example.powercode.us.redditclonesample.ui.activities.main;
 
 import android.arch.lifecycle.Observer;
-import android.content.Context;
-import android.databinding.DataBindingUtil;
-import android.databinding.ObservableInt;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Objects;
 
-import javax.inject.Inject;
-
 import example.powercode.us.redditclonesample.R;
-import example.powercode.us.redditclonesample.app.di.qualifiers.ActivityContext;
-import example.powercode.us.redditclonesample.databinding.FragmentTopicListBinding;
 import example.powercode.us.redditclonesample.model.common.Resource;
 import example.powercode.us.redditclonesample.model.entity.TopicEntity;
 import example.powercode.us.redditclonesample.model.entity.VoteType;
@@ -32,8 +20,8 @@ import example.powercode.us.redditclonesample.ui.activities.base.common.DefaultT
 import example.powercode.us.redditclonesample.ui.activities.base.common.HasFragmentTag;
 import example.powercode.us.redditclonesample.ui.activities.base.fragments.BaseViewModelFragment;
 import example.powercode.us.redditclonesample.ui.activities.base.vm.ViewModelAttachHelper;
+import example.powercode.us.redditclonesample.ui.activities.main.binding.TopicListBinding;
 import example.powercode.us.redditclonesample.ui.activities.main.vm.TopicsViewModel;
-import example.powercode.us.redditclonesample.ui.utils.AbstractOnClickListener;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -43,33 +31,10 @@ import example.powercode.us.redditclonesample.ui.utils.AbstractOnClickListener;
  * Use the {@link TopicListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel>
-        implements HasFragmentTag, TopicsAdapter.InteractionListener {
+public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel, TopicListBinding>
+        implements HasFragmentTag, TopicsAdapter.InteractionListener, TopicListBinding.OnDeleteTopicListener {
+
     public static final String FRAGMENT_TAG = DefaultTagGenerator.generate(TopicListFragment.class);
-
-    @NonNull
-    @Override
-    public String getFragmentTag() {
-        return FRAGMENT_TAG;
-    }
-
-    @Inject
-    @ActivityContext
-    Context c;
-    @Inject
-    OnInteractionListener listener;
-
-    @Inject
-    TopicsAdapter adapter;
-
-    private FragmentTopicListBinding binding;
-
-    @NonNull
-    private final ObservableInt topicsCount = new ObservableInt(0);
-
-    public TopicListFragment() {
-        // Required empty public constructor
-    }
 
     /**
      * Use this factory method to create a new instance of
@@ -84,54 +49,35 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel>
         return fragment;
     }
 
+    @NonNull
+    @Override
+    public String getFragmentTag() {
+        return FRAGMENT_TAG;
+    }
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_topic_list, container, false);
-        binding.setItemsCount(topicsCount);
-
-        return binding.getRoot();
+        return inflater.inflate(R.layout.fragment_topic_list, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setupTopicsRecyclerView(adapter,
-                new DividerItemDecoration(c, DividerItemDecoration.VERTICAL),
-                new DefaultItemAnimator(),
-                new TopicsTouchHelper(0, ItemTouchHelper.LEFT, swipeInteractionListener)
-        );
-
-        binding.fabTopicCreate.setOnClickListener(new OnClickListenerImpl(listener));
-    }
-
-    private void setupTopicsRecyclerView(@Nullable RecyclerView.Adapter adapter,
-                                         @NonNull DividerItemDecoration dividerDecoration,
-                                         @NonNull RecyclerView.ItemAnimator itemAnimator,
-                                         @NonNull ItemTouchHelper.Callback callback) {
-        binding.rvTopics.setItemAnimator(itemAnimator);
-        binding.rvTopics.addItemDecoration(dividerDecoration);
-
-        binding.rvTopics.setAdapter(adapter);
-        new ItemTouchHelper(callback).attachToRecyclerView(binding.rvTopics);
+        binding.setupTopics(this);
+        binding.setupListeners();
     }
 
     private void onTopicsFetchedObserver(@NonNull Resource<List<TopicEntity>> resTopics) {
         switch (resTopics.status) {
             case SUCCESS: {
-                adapter.submitItems(resTopics.data);
-                final int safeItemsCount = resTopics.data != null ? resTopics.data.size() : 0;
-                topicsCount.set(safeItemsCount);
-
+                binding.showItems(resTopics.data);
                 break;
             }
 
             case ERROR: {
-                adapter.submitItems(null);
-                topicsCount.set(-1);
-
+                binding.showItems(null);
                 break;
             }
 
@@ -139,12 +85,6 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel>
                 // TODO: display loading
                 break;
         }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        listener = null;
     }
 
     @NonNull
@@ -162,14 +102,15 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel>
 
     @Override
     protected void onDetachViewModel() {
+        // TODO We don't need to manually remove observers. When fragment (lifecycle owner) will be in DESTROYED state LiveData remove them automatically
+        // @see https://developer.android.com/reference/android/arch/lifecycle/LiveData.html#observe
         viewModel.getTopicsLiveData().removeObservers(this);
         viewModel.getApplyVoteLiveData().removeObservers(this);
         viewModel.getDeleteTopicLiveData().removeObservers(this);
     }
 
     @Override
-    public void onVoteClick(@NonNull View v, int adapterPos, @NonNull VoteType vt) {
-        final TopicEntity topic = adapter.getItem(adapterPos);
+    public void onVoteClick(@NonNull TopicEntity topic, @NonNull VoteType vt) {
         viewModel.getApplyVoteLiveData().observe(this, voteTopicObserver);
         viewModel.voteTopic(topic.id, vt);
     }
@@ -182,15 +123,8 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel>
             switch (votedTopicIdResource.status) {
                 case SUCCESS: {
                     viewModel.getApplyVoteLiveData().removeObserver(this);
-
                     Objects.requireNonNull(votedTopicIdResource.data, "Status.SUCCESS implies data to be set");
-
-                    final long updatedItemId = votedTopicIdResource.data;
-                    int updatedItemPosition = adapter.findItemPosition(topicEntity -> updatedItemId == topicEntity.id);
-                    if (updatedItemPosition != RecyclerView.NO_POSITION) {
-                        adapter.notifyItemChanged(updatedItemPosition);
-                    }
-
+                    binding.updateItemWithId(votedTopicIdResource.data);
                     break;
                 }
                 case ERROR: {
@@ -200,21 +134,6 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel>
                 case LOADING:
                     break;
             }
-        }
-    };
-
-    @NonNull
-    private final TopicsTouchHelper.InteractionListener<RecyclerView, TopicsAdapter.ItemViewHolder> swipeInteractionListener = new TopicsTouchHelper.InteractionListener<RecyclerView, TopicsAdapter.ItemViewHolder>() {
-        @Override
-        public void onSwiped(TopicsAdapter.ItemViewHolder viewHolder, int direction) {
-            TopicEntity topicToDelete = adapter.getItem(viewHolder.getAdapterPosition());
-            viewModel.getDeleteTopicLiveData().observe(TopicListFragment.this, deleteTopicObserver);
-            viewModel.deleteTopic(topicToDelete.id);
-        }
-
-        @Override
-        public boolean onMove(RecyclerView recyclerView, TopicsAdapter.ItemViewHolder viewHolder, TopicsAdapter.ItemViewHolder target) {
-            return false;
         }
     };
 
@@ -233,10 +152,7 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel>
                 case ERROR: {
                     viewModel.getDeleteTopicLiveData().removeObserver(this);
                     Objects.requireNonNull(deleteTopicIdResource.data, "Status.SUCCESS implies data to be set");
-                    final long failedDeleteItemId = deleteTopicIdResource.data;
-                    int failedDeleteItemPosition = adapter.findItemPosition(topicEntity -> failedDeleteItemId == topicEntity.id);
-                    adapter.notifyItemChanged(failedDeleteItemPosition);
-
+                    binding.updateItemWithId(deleteTopicIdResource.data);
                     break;
                 }
                 case LOADING:
@@ -244,6 +160,13 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel>
             }
         }
     };
+
+    @Override
+    public void onDeleteTopic(final TopicEntity topic) {
+        viewModel.getDeleteTopicLiveData()
+                .observe(TopicListFragment.this, deleteTopicObserver);
+        viewModel.deleteTopic(topic.id);
+    }
 
     /**
      * This interface must be implemented by activities that contain this
@@ -257,26 +180,5 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel>
      */
     public interface OnInteractionListener {
         void onCreateNewTopic();
-    }
-
-    private static class OnClickListenerImpl extends AbstractOnClickListener {
-
-        private final WeakReference<OnInteractionListener> listenerRef;
-
-        OnClickListenerImpl(final OnInteractionListener listener) {
-            this.listenerRef = new WeakReference<>(listener);
-        }
-
-        @Override
-        public void _onClick(final View v) {
-            final OnInteractionListener listener = listenerRef.get();
-            if (listener == null) {
-                return;
-            }
-            final int id = v.getId();
-            if (id == R.id.fab_topic_create) {
-                listener.onCreateNewTopic();
-            }
-        }
     }
 }

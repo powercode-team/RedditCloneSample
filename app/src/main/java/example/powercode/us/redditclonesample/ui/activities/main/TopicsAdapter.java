@@ -40,7 +40,7 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ItemViewHo
     private InteractionListener listener;
 
     public interface InteractionListener {
-        void onVoteClick(@NonNull View v, int adapterPos, @NonNull VoteType vt);
+        void onVoteClick(TopicEntity topic, @NonNull VoteType vt);
     }
 
     @Inject
@@ -96,7 +96,7 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ItemViewHo
         }
     };
 
-    static class ItemViewHolder extends DataBindingViewHolder<ItemTopicSwipableBinding>
+    public static class ItemViewHolder extends DataBindingViewHolder<ItemTopicSwipableBinding>
             implements CanBind<TopicEntity>, View.OnClickListener {
         @Nullable
         private InteractionListener listener;
@@ -118,11 +118,12 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ItemViewHo
             if (listener == null) {
                 return;
             }
+
             final int viewId = v.getId();
             if (viewId == R.id.topic_rate_up) {
-                listener.onVoteClick(foreground.topicRateUp, getAdapterPosition(), VoteType.UP);
+                listener.onVoteClick(bindComponent.getTopic(), VoteType.UP);
             } else if (viewId == R.id.topic_rate_down) {
-                listener.onVoteClick(foreground.topicRateDown, getAdapterPosition(), VoteType.DOWN);
+                listener.onVoteClick(bindComponent.getTopic(), VoteType.DOWN);
             }
         }
 
@@ -132,22 +133,6 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ItemViewHo
 
         public TextView getBackground() {
             return background;
-        }
-
-        private void assignListener() {
-//            if (listener != l) {
-            bindComponent.viewForeground.topicRateUp.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onVoteClick(foreground.topicRateUp, getAdapterPosition(), VoteType.UP);
-                }
-            });
-
-            foreground.topicRateDown.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onVoteClick(foreground.topicRateDown, getAdapterPosition(), VoteType.DOWN);
-                }
-            });
-//            }
         }
 
         @UiThread

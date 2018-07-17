@@ -13,7 +13,6 @@ import example.powercode.us.redditclonesample.app.di.scopes.PerActivity;
 import example.powercode.us.redditclonesample.app.di.scopes.PerFragment;
 import example.powercode.us.redditclonesample.ui.activities.base.BaseInjectableFragmentActivity;
 import example.powercode.us.redditclonesample.ui.activities.base.di.BaseInjectableFragmentActivityModule;
-import example.powercode.us.redditclonesample.ui.activities.base.di.BaseInjectableFragmentModule;
 import example.powercode.us.redditclonesample.ui.activities.main.MainActivity;
 import example.powercode.us.redditclonesample.ui.activities.main.TopicCreateFragment;
 import example.powercode.us.redditclonesample.ui.activities.main.TopicListFragment;
@@ -46,7 +45,7 @@ public interface MainActivityModule {
     @PerFragment
     TopicListFragment contributeTopicListFragmentInjector();
 
-    @ContributesAndroidInjector(modules = {BaseInjectableFragmentModule.class})
+    @ContributesAndroidInjector(modules = {TopicCreateFragmentModule.class})
     @PerFragment
     TopicCreateFragment contributeTopicCreateFragmentInjector();
 }

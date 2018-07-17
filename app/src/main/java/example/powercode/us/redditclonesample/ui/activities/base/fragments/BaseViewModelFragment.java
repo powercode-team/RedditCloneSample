@@ -11,12 +11,15 @@ import android.support.v4.app.Fragment;
 
 import javax.inject.Inject;
 
+import example.powercode.us.redditclonesample.ui.activities.base.binding.Binding;
+
 /**
  * Basic fragment which supports dependency injection
  * Inspired by https://proandroiddev.com/reducing-viewmodel-provision-boilerplate-in-googles-githubbrowsersample-549818ee72f0
  * Still not clear how to make it not to recreate ViewModel on device rotation
  */
-public abstract class BaseViewModelFragment<VM extends ViewModel> extends BaseInjectableFragment {
+public abstract class BaseViewModelFragment<VM extends ViewModel, B extends Binding>
+        extends BaseInjectableFragment<B> {
 
     @Inject
     ViewModelProvider.Factory factory;
@@ -27,6 +30,8 @@ public abstract class BaseViewModelFragment<VM extends ViewModel> extends BaseIn
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        // TODO When instantiate ViewModel from fragment (not an activity) ViewModel's onCleared() method never calls
+        // @see https://stackoverflow.com/questions/49257197/oncleared-is-not-being-called-on-fragments-attached-viewmodel
         viewModel = ViewModelProviders.of(this, factory).get(getViewModelClass());
         onAttachViewModel();
     }
@@ -35,6 +40,7 @@ public abstract class BaseViewModelFragment<VM extends ViewModel> extends BaseIn
     public void onDestroyView() {
         super.onDestroyView();
 
+        // TODO What's this? Why ViewModel needs to set null?
         onDetachViewModel();
         viewModel = null;
     }

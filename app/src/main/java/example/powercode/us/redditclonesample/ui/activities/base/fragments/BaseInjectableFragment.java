@@ -1,21 +1,27 @@
 package example.powercode.us.redditclonesample.ui.activities.base.fragments;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.annotation.CallSuper;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.View;
 
 import com.squareup.leakcanary.RefWatcher;
 
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
+import example.powercode.us.redditclonesample.ui.activities.base.binding.Binding;
 
 /**
  * Basic fragment which supports dependency injection
  */
-public abstract class BaseInjectableFragment extends Fragment {
-    @Inject
-    RefWatcher refWatcher;
+public abstract class BaseInjectableFragment<B extends Binding> extends Fragment {
+
+    @Inject RefWatcher refWatcher;
+    @Inject protected B binding;
 
     @CallSuper
     @Override
@@ -34,5 +40,19 @@ public abstract class BaseInjectableFragment extends Fragment {
         super.onDestroy();
 //        Assert.assertNotNull(getContext());
         refWatcher.watch(this/*, this.getClass().getSimpleName()*/);
+    }
+
+    @Override
+    public void onViewCreated(
+            @NonNull final View view,
+            @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        binding.attachView(view);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding.detachView();
     }
 }

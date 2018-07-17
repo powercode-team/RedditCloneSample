@@ -22,6 +22,7 @@ import example.powercode.us.redditclonesample.common.functional.Predicate;
 import example.powercode.us.redditclonesample.databinding.FragmentTopicCreateBinding;
 import example.powercode.us.redditclonesample.model.common.Resource;
 import example.powercode.us.redditclonesample.model.rules.BRulesTopics;
+import example.powercode.us.redditclonesample.ui.activities.base.binding.Binding;
 import example.powercode.us.redditclonesample.ui.activities.base.common.DefaultTagGenerator;
 import example.powercode.us.redditclonesample.ui.activities.base.common.HasFragmentTag;
 import example.powercode.us.redditclonesample.ui.activities.base.fragments.BaseViewModelFragment;
@@ -38,7 +39,7 @@ import example.powercode.us.redditclonesample.ui.utils.UserInputUtils;
  * Use the {@link TopicCreateFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TopicCreateFragment extends BaseViewModelFragment<TopicCreateViewModel> implements HasFragmentTag {
+public class TopicCreateFragment extends BaseViewModelFragment<TopicCreateViewModel, Binding> implements HasFragmentTag {
     public static final String FRAGMENT_TAG = DefaultTagGenerator.generate(TopicCreateFragment.class);
 
     @NonNull
