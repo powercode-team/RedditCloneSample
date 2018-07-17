@@ -14,6 +14,8 @@ public interface TopicCreateBinding extends Binding {
 
     void setupListeners(CreateTopicListeners listeners);
 
+    void setupWatchers();
+
     interface CreateTopicListeners {
 
         void onTopicNewAbort();

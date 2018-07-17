@@ -67,6 +67,7 @@ public class TopicCreateFragment extends BaseViewModelFragment<TopicCreateViewMo
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         binding.setupListeners(this);
+        binding.setupWatchers();
     }
 
     @NonNull

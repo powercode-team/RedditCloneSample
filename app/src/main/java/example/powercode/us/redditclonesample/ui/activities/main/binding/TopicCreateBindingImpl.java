@@ -2,7 +2,10 @@ package example.powercode.us.redditclonesample.ui.activities.main.binding;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
 import java.lang.ref.WeakReference;
@@ -14,6 +17,7 @@ import example.powercode.us.redditclonesample.app.di.qualifiers.ActivityContext;
 import example.powercode.us.redditclonesample.common.ParamPredicate;
 import example.powercode.us.redditclonesample.common.functional.Predicate;
 import example.powercode.us.redditclonesample.ui.activities.base.binding.BaseBinding;
+import example.powercode.us.redditclonesample.ui.activities.base.binding.Binding;
 import example.powercode.us.redditclonesample.ui.utils.AbstractOnClickListener;
 import example.powercode.us.redditclonesample.ui.utils.UserInputUtils;
 
@@ -33,6 +37,15 @@ public class TopicCreateBindingImpl extends BaseBinding implements TopicCreateBi
         get(R.id.topic_new_abort).setOnClickListener(impl);
         get(R.id.topic_new_create).setOnClickListener(impl);
         get(R.id.action_back).setOnClickListener(impl);
+    }
+
+    @Override
+    public void setupWatchers() {
+        final EditorsWatcherImpl watcher = new EditorsWatcherImpl(this);
+        this.<EditText>get(R.id.input_title).addTextChangedListener(watcher);
+        this.<EditText>get(R.id.input_initial_rating).addTextChangedListener(watcher);
+
+        updateButtons();
     }
 
     @Override
@@ -108,6 +121,47 @@ public class TopicCreateBindingImpl extends BaseBinding implements TopicCreateBi
             } else if (viewId == R.id.action_back) {
                 listeners.onActionBack();
             }
+        }
+    }
+
+    private void updateButtons() {
+        final EditText inputTitle = get(R.id.input_title);
+        final EditText inputInitialRating = get(R.id.input_initial_rating);
+        final Button topicNewCreate = get(R.id.topic_new_create);
+
+        topicNewCreate.setEnabled(inputTitle.getText().length() > 0
+                && inputInitialRating.getText().length() > 0);
+    }
+
+    private static class EditorsWatcherImpl implements TextWatcher {
+
+        private final WeakReference<TopicCreateBindingImpl> bindingRef;
+
+        EditorsWatcherImpl(final TopicCreateBindingImpl binding) {
+            this.bindingRef = new WeakReference<>(binding);
+        }
+
+        @Override
+        public void beforeTextChanged(
+                final CharSequence s,
+                final int start,
+                final int count,
+                final int after) {}
+
+        @Override
+        public void onTextChanged(
+                final CharSequence s,
+                final int start,
+                final int before,
+                final int count) {}
+
+        @Override
+        public void afterTextChanged(final Editable s) {
+            final TopicCreateBindingImpl binding = bindingRef.get();
+            if (binding == null) {
+                return;
+            }
+            binding.updateButtons();
         }
     }
 }
