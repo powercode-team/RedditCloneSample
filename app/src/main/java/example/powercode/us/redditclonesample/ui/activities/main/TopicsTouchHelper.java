@@ -37,17 +37,17 @@ public final class TopicsTouchHelper extends GenericItemTouchHelperSimpleCallbac
     @Override
     public void onSelectedChangedCallback(TopicsAdapter.ItemViewHolder viewHolder, int actionState) {
         if (viewHolder != null) {
-            getDefaultUIUtil().onSelected(viewHolder.getForeground().getRoot());
+            getDefaultUIUtil().onSelected(viewHolder.getForeground());
         }
     }
 
     @Override
     public void clearViewCallback(RecyclerView recyclerView, TopicsAdapter.ItemViewHolder viewHolder) {
-        getDefaultUIUtil().clearView(viewHolder.getForeground().getRoot());
+        getDefaultUIUtil().clearView(viewHolder.getForeground());
     }
 
     @Override
     public void onChildDrawCallback(Canvas c, RecyclerView recyclerView, TopicsAdapter.ItemViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-        getDefaultUIUtil().onDraw(c, recyclerView, viewHolder.getForeground().getRoot(), dX, dY, actionState, isCurrentlyActive);
+        getDefaultUIUtil().onDraw(c, recyclerView, viewHolder.getForeground(), dX, dY, actionState, isCurrentlyActive);
     }
 }

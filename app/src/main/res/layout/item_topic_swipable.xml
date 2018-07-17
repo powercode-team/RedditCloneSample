@@ -1,41 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
-    <data>
-
-        <import type="example.powercode.us.redditclonesample.model.entity.TopicEntity" />
-
-        <variable
-            name="topic"
-            type="example.powercode.us.redditclonesample.model.entity.TopicEntity" />
-    </data>
-
-    <FrameLayout
+    <TextView
+        android:id="@+id/view_background"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:gravity="center_vertical|end"
+        android:paddingStart="@dimen/padding_horizontal_item_topic"
+        android:paddingEnd="@dimen/padding_horizontal_item_topic"
+        android:drawableEnd="@drawable/ic_delete_white_24dp"
+        android:drawablePadding="@dimen/padding_drawable_item_delete"
+        android:text="@string/action_delete"
+        android:textAllCaps="true"
+        android:textSize="@dimen/font_size_topic_delete"
+        android:textColor="@color/almostWhite"
+        android:background="@color/bg_row_background"
+        />
 
-        <TextView
-            android:id="@+id/view_background"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical|end"
-            android:paddingStart="@dimen/padding_horizontal_item_topic"
-            android:paddingEnd="@dimen/padding_horizontal_item_topic"
-            android:drawableEnd="@drawable/ic_delete_white_24dp"
-            android:drawablePadding="@dimen/padding_drawable_item_delete"
-            android:text="@string/action_delete"
-            android:textAllCaps="true"
-            android:textSize="@dimen/font_size_topic_delete"
-            android:textColor="@color/almostWhite"
-            android:background="@color/bg_row_background"
-            />
-
-        <include
-            android:id="@+id/view_foreground"
-            layout="@layout/item_topic"
-            app:topic="@{topic}"
-            />
-    </FrameLayout>
-</layout>
+    <include
+        android:id="@+id/view_foreground"
+        layout="@layout/item_topic"/>
+</FrameLayout>

@@ -1,6 +1,5 @@
 package example.powercode.us.redditclonesample.ui.activities.main;
 
-import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
@@ -20,12 +19,9 @@ import javax.inject.Inject;
 import example.powercode.us.redditclonesample.R;
 import example.powercode.us.redditclonesample.common.Algorithms;
 import example.powercode.us.redditclonesample.common.functional.Predicate;
-import example.powercode.us.redditclonesample.databinding.ItemTopicBinding;
-import example.powercode.us.redditclonesample.databinding.ItemTopicSwipableBinding;
 import example.powercode.us.redditclonesample.model.entity.TopicEntity;
 import example.powercode.us.redditclonesample.model.entity.VoteType;
 import example.powercode.us.redditclonesample.ui.activities.base.CanBind;
-import example.powercode.us.redditclonesample.ui.activities.base.DataBindingViewHolder;
 
 /**
  * Created by dev for RedditCloneSample on 19-Jun-18.
@@ -54,7 +50,9 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ItemViewHo
     @NonNull
     @Override
     public ItemViewHolder onCreateViewHolder(@Nullable ViewGroup parent, int viewType) {
-        return new ItemViewHolder(DataBindingUtil.inflate(inflater, R.layout.item_topic_swipable, parent, false), listener);
+        final View view = inflater.inflate(R.layout.item_topic_swipable,
+                parent, false);
+        return new ItemViewHolder(view, listener);
     }
 
     @Override
@@ -96,21 +94,26 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ItemViewHo
         }
     };
 
-    public static class ItemViewHolder extends DataBindingViewHolder<ItemTopicSwipableBinding>
+    public static class ItemViewHolder extends RecyclerView.ViewHolder
             implements CanBind<TopicEntity>, View.OnClickListener {
         @Nullable
-        private InteractionListener listener;
-        private final ItemTopicBinding foreground;
-        private final TextView background;
+        private final InteractionListener listener;
+        private final View foreground;
+        private final TextView topicTitleView;
+        private final TextView topicRatingValueView;
 
-        ItemViewHolder(@NonNull ItemTopicSwipableBinding binding, @Nullable InteractionListener l) {
-            super(binding);
+        private TopicEntity topic;
+
+        ItemViewHolder(@NonNull View view, @Nullable InteractionListener l) {
+            super(view);
             listener = l;
 
-            foreground = binding.viewForeground;
-            background = binding.viewBackground;
-            foreground.topicRateUp.setOnClickListener(this);
-            foreground.topicRateDown.setOnClickListener(this);
+            view.findViewById(R.id.topic_rate_up).setOnClickListener(this);
+            view.findViewById(R.id.topic_rate_down).setOnClickListener(this);
+
+            this.foreground = view.findViewById(R.id.view_foreground);
+            this.topicTitleView = view.findViewById(R.id.topic_title);
+            this.topicRatingValueView = view.findViewById(R.id.topic_rating_value);
         }
 
         @Override
@@ -121,24 +124,22 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ItemViewHo
 
             final int viewId = v.getId();
             if (viewId == R.id.topic_rate_up) {
-                listener.onVoteClick(bindComponent.getTopic(), VoteType.UP);
+                listener.onVoteClick(topic, VoteType.UP);
             } else if (viewId == R.id.topic_rate_down) {
-                listener.onVoteClick(bindComponent.getTopic(), VoteType.DOWN);
+                listener.onVoteClick(topic, VoteType.DOWN);
             }
         }
 
-        public ItemTopicBinding getForeground() {
+        public View getForeground() {
             return foreground;
-        }
-
-        public TextView getBackground() {
-            return background;
         }
 
         @UiThread
         @Override
         public void bind(@NonNull TopicEntity t) {
-            bindComponent.setTopic(t);
+            topicTitleView.setText(t.title);
+            topicRatingValueView.setText(String.valueOf(t.getRating()));
+            this.topic = t;
         }
     }
 }

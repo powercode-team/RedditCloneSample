@@ -17,7 +17,6 @@ import example.powercode.us.redditclonesample.app.di.qualifiers.ActivityContext;
 import example.powercode.us.redditclonesample.common.ParamPredicate;
 import example.powercode.us.redditclonesample.common.functional.Predicate;
 import example.powercode.us.redditclonesample.ui.activities.base.binding.BaseBinding;
-import example.powercode.us.redditclonesample.ui.activities.base.binding.Binding;
 import example.powercode.us.redditclonesample.ui.utils.AbstractOnClickListener;
 import example.powercode.us.redditclonesample.ui.utils.UserInputUtils;
 
