@@ -1,29 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
-    <LinearLayout
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <ImageButton
+        android:id="@+id/action_back"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        style="?android:attr/buttonBarButtonStyle"
+        android:minWidth="24dp"
+        android:src="@drawable/ic_arrow_back_24dp"
+        android:tint="@android:color/primary_text_dark"
+        android:contentDescription="@string/content_description_action_back"
+        />
+
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal">
-
-        <ImageButton
-            android:id="@+id/action_back"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            style="?android:attr/buttonBarButtonStyle"
-            android:minWidth="24dp"
-            android:src="@drawable/ic_arrow_back_24dp"
-            android:tint="@android:color/primary_text_dark"
-            android:contentDescription="@string/content_description_action_back"
-            />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/title_topic_create"
-            android:textColor="@android:color/primary_text_dark"
-            android:gravity="center"
-            android:textSize="@dimen/font_size_toolbar_title"
-            android:layout_marginEnd="48dp"
-            />
-    </LinearLayout>
-</layout>
+        android:text="@string/title_topic_create"
+        android:textColor="@android:color/primary_text_dark"
+        android:gravity="center"
+        android:textSize="@dimen/font_size_toolbar_title"
+        android:layout_marginEnd="48dp"
+        />
+</LinearLayout>
