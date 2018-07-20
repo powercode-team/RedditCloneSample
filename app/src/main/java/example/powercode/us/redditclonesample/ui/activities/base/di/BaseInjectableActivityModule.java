@@ -10,7 +10,6 @@ import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
 import example.powercode.us.redditclonesample.app.di.qualifiers.ActivityContext;
-import example.powercode.us.redditclonesample.app.di.scopes.PerActivity;
 import example.powercode.us.redditclonesample.ui.activities.base.BaseInjectableActivity;
 
 /**
@@ -18,23 +17,20 @@ import example.powercode.us.redditclonesample.ui.activities.base.BaseInjectableA
  */
 @Module
 public interface BaseInjectableActivityModule {
-    @PerActivity
+
     @ActivityContext
     @Binds
     Context bindActivityContext(final @NonNull AppCompatActivity activity);
 
-    @PerActivity
     @Provides
     static LayoutInflater provideInflater(@NonNull @ActivityContext Context c) {
         return LayoutInflater.from(c);
     }
 
-    @PerActivity
     @Binds
     AppCompatActivity bindActivity(final @NonNull BaseInjectableActivity activity);
 
     @Provides
-    @PerActivity
     static PackageManager providePackageManager(final @NonNull BaseInjectableActivity activity) {
         return activity.getPackageManager();
     }

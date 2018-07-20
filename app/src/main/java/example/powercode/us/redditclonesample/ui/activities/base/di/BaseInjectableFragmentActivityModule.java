@@ -8,7 +8,6 @@ import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
 import example.powercode.us.redditclonesample.app.di.qualifiers.ParentFragmentManager;
-import example.powercode.us.redditclonesample.app.di.scopes.PerActivity;
 import example.powercode.us.redditclonesample.ui.activities.base.BaseInjectableActivity;
 import example.powercode.us.redditclonesample.ui.activities.base.BaseInjectableFragmentActivity;
 
@@ -17,13 +16,12 @@ import example.powercode.us.redditclonesample.ui.activities.base.BaseInjectableF
  */
 @Module (includes = {BaseInjectableActivityModule.class})
 public interface BaseInjectableFragmentActivityModule {
+
     @Binds
-    @PerActivity
     BaseInjectableActivity bindActivity(final BaseInjectableFragmentActivity activity);
 
 
     @Provides
-    @PerActivity
     @ParentFragmentManager
     static FragmentManager provideFragmentManager(final @NonNull AppCompatActivity activity) {
         return activity.getSupportFragmentManager();

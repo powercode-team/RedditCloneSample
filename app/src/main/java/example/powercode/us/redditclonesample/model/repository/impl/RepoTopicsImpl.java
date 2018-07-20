@@ -14,7 +14,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import javax.inject.Inject;
 
-import example.powercode.us.redditclonesample.app.di.scopes.PerApplication;
 import example.powercode.us.redditclonesample.common.Algorithms;
 import example.powercode.us.redditclonesample.common.functional.Function;
 import example.powercode.us.redditclonesample.model.common.Resource;
@@ -27,7 +26,6 @@ import example.powercode.us.redditclonesample.model.rules.BRulesTopics;
 /**
  * Created by dev for RedditCloneSample on 19-Jun-18.
  */
-@PerApplication
 public class RepoTopicsImpl implements RepoTopics {
 
     private static final int TOPICS_COUNT = (int)(BRulesTopics.TOPICS_COUNT_WORKING_SET * 1.2f);

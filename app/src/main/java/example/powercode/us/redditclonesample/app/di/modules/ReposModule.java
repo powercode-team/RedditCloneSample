@@ -13,6 +13,7 @@ import example.powercode.us.redditclonesample.model.repository.impl.RepoTopicsIm
  */
 @Module
 public interface ReposModule {
+
     @PerApplication
     @Binds
     RepoTopics bindRepoTopics(@NonNull RepoTopicsImpl impl);

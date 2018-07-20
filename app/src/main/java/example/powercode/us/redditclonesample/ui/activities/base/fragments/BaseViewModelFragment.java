@@ -1,13 +1,8 @@
 package example.powercode.us.redditclonesample.ui.activities.base.fragments;
 
 import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProvider;
-import android.arch.lifecycle.ViewModelProviders;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
-import android.support.v4.app.Fragment;
 
 import javax.inject.Inject;
 
@@ -21,42 +16,7 @@ import example.powercode.us.redditclonesample.ui.activities.base.binding.Binding
 public abstract class BaseViewModelFragment<VM extends ViewModel, B extends Binding>
         extends BaseInjectableFragment<B> {
 
-    @Inject
-    ViewModelProvider.Factory factory;
-
-    protected VM viewModel;
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        // TODO When instantiate ViewModel from fragment (not an activity) ViewModel's onCleared() method never calls
-        // @see https://stackoverflow.com/questions/49257197/oncleared-is-not-being-called-on-fragments-attached-viewmodel
-        viewModel = ViewModelProviders.of(this, factory).get(getViewModelClass());
-        onAttachViewModel();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-
-        // TODO What's this? Why ViewModel needs to set null?
-        onDetachViewModel();
-        viewModel = null;
-    }
-
-    @NonNull
-    protected abstract Class<VM> getViewModelClass();
-
-    /**
-     * Called when viewModel has been attached to Fragment see {@link Fragment#onActivityCreated(Bundle)}
-     */
-    protected abstract void onAttachViewModel();
-
-    /**
-     * Called when viewModel is about to be detached from the Fragment {@link Fragment#onDestroyView()}
-     */
-    protected abstract void onDetachViewModel();
+    @Inject protected VM viewModel;
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public void setViewModel(@NonNull VM viewModel) {

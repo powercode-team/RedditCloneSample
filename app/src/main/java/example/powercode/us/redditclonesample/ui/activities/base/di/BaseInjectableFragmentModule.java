@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment;
 
 import dagger.Binds;
 import dagger.Module;
-import example.powercode.us.redditclonesample.app.di.scopes.PerFragment;
 import example.powercode.us.redditclonesample.ui.activities.base.fragments.BaseInjectableFragment;
 
 /**
@@ -13,7 +12,7 @@ import example.powercode.us.redditclonesample.ui.activities.base.fragments.BaseI
  */
 @Module
 public interface BaseInjectableFragmentModule {
-    @PerFragment
+
     @Binds
     Fragment bindFragment(@NonNull final BaseInjectableFragment fragment);
 }

@@ -4,7 +4,6 @@ import android.support.v7.app.AppCompatDialogFragment;
 
 import dagger.Binds;
 import dagger.Module;
-import example.powercode.us.redditclonesample.app.di.scopes.PerFragment;
 import example.powercode.us.redditclonesample.ui.activities.base.fragments.BaseInjectableDialogFragment;
 
 /**
@@ -13,6 +12,6 @@ import example.powercode.us.redditclonesample.ui.activities.base.fragments.BaseI
 @Module
 public interface BaseInjectableDialogFragmentModule {
 
-    @Binds @PerFragment
+    @Binds
     AppCompatDialogFragment bindFragment(BaseInjectableDialogFragment fragment);
 }

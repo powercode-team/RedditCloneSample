@@ -51,10 +51,7 @@ public class TopicCreateFragment extends BaseViewModelFragment<TopicCreateViewMo
      * @return A new instance of fragment TopicListFragment.
      */
     public static TopicCreateFragment newInstance() {
-        TopicCreateFragment fragment = new TopicCreateFragment();
-//        Bundle args = new Bundle();
-//        fragment.setArguments(args);
-        return fragment;
+        return new TopicCreateFragment();
     }
 
     @Override
@@ -68,6 +65,13 @@ public class TopicCreateFragment extends BaseViewModelFragment<TopicCreateViewMo
         super.onViewCreated(view, savedInstanceState);
         binding.setupListeners(this);
         binding.setupWatchers();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        ViewModelAttachHelper.attachObserverIfLoading(viewModel.getCreateTopicLiveData(),
+                this, createTopicObserver);
     }
 
     @NonNull
@@ -101,21 +105,10 @@ public class TopicCreateFragment extends BaseViewModelFragment<TopicCreateViewMo
         listener = null;
     }
 
-    @NonNull
-    @Override
-    protected Class<TopicCreateViewModel> getViewModelClass() {
-        return TopicCreateViewModel.class;
-    }
-
-    @Override
-    protected void onAttachViewModel() {
-        ViewModelAttachHelper.attachObserverIfLoading(viewModel.getCreateTopicLiveData(), this, createTopicObserver);
-    }
-
-    @Override
-    protected void onDetachViewModel() {
-        viewModel.getCreateTopicLiveData().removeObservers(this);
-    }
+//    @Override
+//    protected void onDetachViewModel() {
+//        viewModel.getCreateTopicLiveData().removeObservers(this);
+//    }
 
     @Override
     public void onTopicNewAbort() {

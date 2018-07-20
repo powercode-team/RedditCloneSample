@@ -43,10 +43,7 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel, To
      * @return A new instance of fragment TopicListFragment.
      */
     public static TopicListFragment newInstance() {
-        TopicListFragment fragment = new TopicListFragment();
-//        Bundle args = new Bundle();
-//        fragment.setArguments(args);
-        return fragment;
+        return new TopicListFragment();
     }
 
     @NonNull
@@ -69,6 +66,15 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel, To
         binding.setupListeners();
     }
 
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        viewModel.getTopicsLiveData().observe(this, this::onTopicsFetchedObserver);
+        ViewModelAttachHelper.attachObserverIfLoading(viewModel.getDeleteTopicLiveData(), this, deleteTopicObserver);
+        ViewModelAttachHelper.attachObserverIfLoading(viewModel.getApplyVoteLiveData(), this, voteTopicObserver);
+    }
+
     private void onTopicsFetchedObserver(@NonNull Resource<List<TopicEntity>> resTopics) {
         switch (resTopics.status) {
             case SUCCESS: {
@@ -87,27 +93,14 @@ public class TopicListFragment extends BaseViewModelFragment<TopicsViewModel, To
         }
     }
 
-    @NonNull
-    @Override
-    protected Class<TopicsViewModel> getViewModelClass() {
-        return TopicsViewModel.class;
-    }
-
-    @Override
-    protected void onAttachViewModel() {
-        viewModel.getTopicsLiveData().observe(this, this::onTopicsFetchedObserver);
-        ViewModelAttachHelper.attachObserverIfLoading(viewModel.getDeleteTopicLiveData(), this, deleteTopicObserver);
-        ViewModelAttachHelper.attachObserverIfLoading(viewModel.getApplyVoteLiveData(), this, voteTopicObserver);
-    }
-
-    @Override
-    protected void onDetachViewModel() {
-        // TODO We don't need to manually remove observers. When fragment (lifecycle owner) will be in DESTROYED state LiveData remove them automatically
-        // @see https://developer.android.com/reference/android/arch/lifecycle/LiveData.html#observe
-        viewModel.getTopicsLiveData().removeObservers(this);
-        viewModel.getApplyVoteLiveData().removeObservers(this);
-        viewModel.getDeleteTopicLiveData().removeObservers(this);
-    }
+//    @Override
+//    protected void onDetachViewModel() {
+//        // TODO We don't need to manually remove observers. When fragment (lifecycle owner) will be in DESTROYED state LiveData remove them automatically
+//        // @see https://developer.android.com/reference/android/arch/lifecycle/LiveData.html#observe
+//        viewModel.getTopicsLiveData().removeObservers(this);
+//        viewModel.getApplyVoteLiveData().removeObservers(this);
+//        viewModel.getDeleteTopicLiveData().removeObservers(this);
+//    }
 
     @Override
     public void onVoteClick(@NonNull TopicEntity topic, @NonNull VoteType vt) {
