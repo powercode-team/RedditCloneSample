@@ -2,10 +2,10 @@ package example.powercode.us.redditclonesample.base.di;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;

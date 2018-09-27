@@ -1,12 +1,7 @@
 package example.powercode.us.redditclonesample.main.ui;
 
-import android.arch.lifecycle.Observer;
 import android.content.Context;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +13,13 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import example.powercode.us.redditclonesample.R;
 import example.powercode.us.redditclonesample.app.di.qualifiers.ActivityContext;
-import example.powercode.us.redditclonesample.app.di.qualifiers.AppContext;
 import example.powercode.us.redditclonesample.base.error.ErrorDataTyped;
 import example.powercode.us.redditclonesample.base.ui.common.DefaultTagGenerator;
 import example.powercode.us.redditclonesample.base.ui.common.HasFragmentTag;

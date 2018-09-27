@@ -44,45 +44,47 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation deps.firebase.core
-    implementation deps.crashlytics
-    implementation deps.support.appcompat
-    implementation deps.support.constraint
-    implementation deps.support.recyclerview
-    implementation deps.support.design
+
+    implementation deps.basic.crashlytics
+    implementation deps.basic.app_compat
+
+    implementation deps.basic.ui.constraint_layout
+    implementation deps.basic.ui.constraint_layout_solver
+    implementation deps.basic.ui.recyclerview
+    implementation deps.basic.material_design
 
     implementation deps.rx.java
     implementation deps.rx.android
-    implementation deps.rx.rxbinding2.support_v4
-    implementation deps.rx.rxbinding2.appcompat_v7
-    implementation deps.rx.rxbinding2.design
+    implementation deps.rx.binding.support_v4
+    implementation deps.rx.binding.appcompat_v7
+    implementation deps.rx.binding.design
 
-    implementation deps.arch_lifecycle_java
-    implementation deps.arch_lifecycle_extension
+    implementation deps.basic.lifecycle.java
+    implementation deps.basic.lifecycle.extensions
 
-    //    For controlling LiveData background threads in your tests, add:
-    testImplementation deps.arch_core_testing
+    // For controlling LiveData background threads in your tests, add:
+//    testImplementation deps.arch_core_testing
+
     implementation deps.dagger.runtime
     annotationProcessor deps.dagger.compiler
     implementation deps.dagger.android_support
-    annotationProcessor deps.dagger.android_support_processor
+    annotationProcessor deps.dagger.android_processor
+
     implementation deps.timber
 
     implementation deps.find_bugs_jsr305
 
     debugImplementation deps.leak_canary.debug
     releaseImplementation deps.leak_canary.release
-    testImplementation deps.junit
-    androidTestImplementation deps.atsl.runner
-    androidTestImplementation deps.atsl.rules
-    androidTestImplementation(deps.espresso.core, {
-        exclude group: 'com.android.support', module: 'support-annotations'
-        exclude group: 'com.google.code.findbugs', module: 'jsr305'
-    })
 
-    androidTestImplementation(deps.espresso.contrib, {
-        exclude group: 'com.android.support', module: 'support-annotations'
-        exclude group: 'com.google.code.findbugs', module: 'jsr305'
-    })
+    testImplementation deps.test.junit
+    androidTestImplementation deps.test.runner
+//    androidTestImplementation deps.atsl.rules
+//    androidTestImplementation(deps.espresso.core, {
+//        exclude group: 'com.android.support', module: 'support-annotations'
+//        exclude group: 'com.google.code.findbugs', module: 'jsr305'
+//    })
+    
     // Ensure the no-op dependency is always used in JVM tests.
     configurations.all { config ->
         if (config.name.contains('UnitTest')

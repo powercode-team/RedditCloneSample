@@ -1,7 +1,6 @@
 package example.powercode.us.redditclonesample.utils;
 
-import android.support.annotation.Nullable;
-
+import androidx.annotation.Nullable;
 import io.reactivex.disposables.Disposable;
 
 /**

@@ -1,14 +1,15 @@
 package example.powercode.us.redditclonesample.base.ui.fragments;
 
 import android.content.Context;
-import android.support.annotation.CallSuper;
-import android.support.v4.app.Fragment;
 
 import com.squareup.leakcanary.RefWatcher;
 
 import javax.inject.Inject;
 
+import androidx.annotation.CallSuper;
+import androidx.fragment.app.Fragment;
 import dagger.android.support.AndroidSupportInjection;
+
 
 /**
  * Basic fragment which supports dependency injection

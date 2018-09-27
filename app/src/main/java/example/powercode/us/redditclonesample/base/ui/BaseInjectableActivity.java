@@ -1,10 +1,10 @@
 package example.powercode.us.redditclonesample.base.ui;
 
 import android.os.Bundle;
-import android.support.annotation.CallSuper;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import dagger.android.AndroidInjection;
 
 /**

@@ -1,8 +1,10 @@
 package example.powercode.us.redditclonesample.common.rv;
 
 import android.graphics.Canvas;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
+
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
+
 
 /**
  * Created by dev for RedditCloneSample on 22-Jun-18.

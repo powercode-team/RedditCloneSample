@@ -1,14 +1,9 @@
 package example.powercode.us.redditclonesample.model.repository.impl;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.util.Pair;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
@@ -17,10 +12,12 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 import example.powercode.us.redditclonesample.app.di.scopes.PerApplication;
 import example.powercode.us.redditclonesample.base.error.ErrorDataTyped;
 import example.powercode.us.redditclonesample.common.Algorithms;
-import example.powercode.us.redditclonesample.common.functional.BiFunction;
 import example.powercode.us.redditclonesample.common.functional.Function;
 import example.powercode.us.redditclonesample.common.functional.Predicate;
 import example.powercode.us.redditclonesample.model.common.Resource;

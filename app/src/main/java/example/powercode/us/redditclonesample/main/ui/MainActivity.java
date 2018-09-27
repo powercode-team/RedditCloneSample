@@ -1,12 +1,13 @@
 package example.powercode.us.redditclonesample.main.ui;
 
-import android.arch.lifecycle.ViewModelProvider;
-import android.databinding.DataBindingUtil;
+
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProvider;
 import example.powercode.us.redditclonesample.R;
 import example.powercode.us.redditclonesample.base.ui.BaseViewModelFragmentActivity;
 import example.powercode.us.redditclonesample.databinding.ActivityMainBinding;

@@ -1,11 +1,6 @@
 package example.powercode.us.redditclonesample.common.patterns.holder;
 
-import android.support.annotation.NonNull;
-
-import java.util.ArrayDeque;
-import java.util.Queue;
-import java.util.Stack;
-
+import androidx.annotation.NonNull;
 import example.powercode.us.redditclonesample.common.patterns.CommandBase;
 
 /**

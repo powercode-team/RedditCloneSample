@@ -1,13 +1,15 @@
 package example.powercode.us.redditclonesample.utils;
 
+
 import android.annotation.SuppressLint;
 import android.os.Build;
-import android.support.annotation.IdRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.view.ViewTreeObserver;
+
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 
 /**
  * Created by dev for RedditCloneSample on 03-Jul-18.

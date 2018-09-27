@@ -1,7 +1,6 @@
 package example.powercode.us.redditclonesample.main.vm.command;
 
-import android.support.annotation.NonNull;
-
+import androidx.annotation.NonNull;
 import example.powercode.us.redditclonesample.common.patterns.CommandBase;
 import example.powercode.us.redditclonesample.model.entity.TopicEntity;
 

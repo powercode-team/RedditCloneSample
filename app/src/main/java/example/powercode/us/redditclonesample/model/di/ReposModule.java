@@ -1,7 +1,6 @@
 package example.powercode.us.redditclonesample.model.di;
 
-import android.support.annotation.NonNull;
-
+import androidx.annotation.NonNull;
 import dagger.Binds;
 import dagger.Module;
 import example.powercode.us.redditclonesample.app.di.scopes.PerApplication;

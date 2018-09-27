@@ -5,19 +5,19 @@
 
     <data>
 
-        <import type="android.databinding.ObservableInt" />
+        <import type="androidx.databinding.ObservableInt" />
 
         <variable
             name="itemsCount"
             type="ObservableInt" />
     </data>
 
-    <android.support.design.widget.CoordinatorLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".main.ui.TopicListFragment">
 
-        <android.support.v4.widget.NestedScrollView
+        <androidx.core.widget.NestedScrollView
             android:id="@+id/rc_empty_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -35,7 +35,7 @@
                     android:text="@string/msg_no_items"
                     android:textSize="@dimen/font_size_topic_title" />
             </FrameLayout>
-        </android.support.v4.widget.NestedScrollView>
+        </androidx.core.widget.NestedScrollView>
 
         <!--android:paddingBottom is set programmatically in the fragment to handle FAB size and margins-->
         <example.powercode.us.redditclonesample.common.rv.RecyclerViewEx
@@ -48,14 +48,13 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             tools:listitem="@layout/item_topic" />
 
-        <!--</android.support.v4.widget.NestedScrollView>-->
 
-        <android.support.design.widget.AppBarLayout
+        <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar_topics"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.v7.widget.Toolbar
+            <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar_topics"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
@@ -71,10 +70,10 @@
                     android:id="@+id/toolbar_content"
                     layout="@layout/toolbar_topic_list"
                     app:itemsCount="@{itemsCount}" />
-            </android.support.v7.widget.Toolbar>
-        </android.support.design.widget.AppBarLayout>
+            </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.AppBarLayout>
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_topic_create"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -84,5 +83,5 @@
             app:fabSize="auto"
             app:layout_anchor="@id/rv_topics"
             app:layout_anchorGravity="bottom|end" />
-    </android.support.design.widget.CoordinatorLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

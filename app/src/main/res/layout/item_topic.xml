@@ -12,7 +12,7 @@
             type="example.powercode.us.redditclonesample.model.entity.TopicEntity" />
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/almostWhite"
@@ -22,14 +22,14 @@
         android:paddingStart="?android:attr/listPreferredItemPaddingStart"
         android:paddingTop="8dp">
 
-        <android.support.constraint.Guideline
+        <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guide_topic_picture"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.10" />
 
-        <android.support.constraint.Guideline
+        <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guide_topic_swipe_to_remove"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -123,5 +123,5 @@
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toEndOf="@id/guide_topic_picture"
             app:layout_constraintTop_toBottomOf="@id/topic_title" />
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

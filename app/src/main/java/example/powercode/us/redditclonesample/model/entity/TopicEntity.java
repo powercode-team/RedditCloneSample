@@ -1,10 +1,9 @@
 package example.powercode.us.redditclonesample.model.entity;
 
-import android.support.annotation.NonNull;
-
 import java.util.Locale;
 import java.util.Objects;
 
+import androidx.annotation.NonNull;
 import example.powercode.us.redditclonesample.base.ui.common.HasId;
 
 /**

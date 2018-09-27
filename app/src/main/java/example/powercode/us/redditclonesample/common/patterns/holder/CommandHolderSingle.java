@@ -1,14 +1,11 @@
 package example.powercode.us.redditclonesample.common.patterns.holder;
 
-import android.support.annotation.NonNull;
-
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.LinkedList;
-import java.util.Stack;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
 import example.powercode.us.redditclonesample.common.patterns.CommandBase;
 
 /**

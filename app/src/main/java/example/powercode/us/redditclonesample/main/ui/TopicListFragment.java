@@ -1,23 +1,16 @@
 package example.powercode.us.redditclonesample.main.ui;
 
-import android.arch.lifecycle.Observer;
+
 import android.content.Context;
-import android.databinding.DataBindingUtil;
-import android.databinding.ObservableInt;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ObservableInt;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.jakewharton.rxbinding2.view.RxView;
 
 import java.util.List;
@@ -25,6 +18,14 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
 import example.powercode.us.redditclonesample.R;
 import example.powercode.us.redditclonesample.app.di.qualifiers.ActivityContext;
 import example.powercode.us.redditclonesample.base.error.ErrorDataTyped;

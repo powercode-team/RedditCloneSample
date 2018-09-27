@@ -1,21 +1,20 @@
 package example.powercode.us.redditclonesample.base.ui;
 
-import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProvider;
-import android.support.annotation.NonNull;
-
 import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import example.powercode.us.redditclonesample.app.di.scopes.PerActivity;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 /**
  * Main view-model creator which allows to inject {@link ViewModel} descendants
  */
 public class MainViewModelFactory implements ViewModelProvider.Factory {
-    private final @NonNull Map<Class<? extends ViewModel>, Provider<ViewModel>> creators_;
+    private final @NonNull
+    Map<Class<? extends ViewModel>, Provider<ViewModel>> creators_;
 
     @Inject
     MainViewModelFactory(@NonNull Map<Class<? extends ViewModel>, Provider<ViewModel>> creators) {

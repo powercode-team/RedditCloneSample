@@ -1,9 +1,9 @@
 package example.powercode.us.redditclonesample.base.ui.fragments;
 
 import android.content.Context;
-import android.support.annotation.CallSuper;
-import android.support.v7.app.AppCompatDialogFragment;
 
+import androidx.annotation.CallSuper;
+import androidx.appcompat.app.AppCompatDialogFragment;
 import dagger.android.support.AndroidSupportInjection;
 
 /**

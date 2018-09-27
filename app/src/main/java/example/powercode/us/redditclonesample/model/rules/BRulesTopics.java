@@ -1,9 +1,8 @@
 package example.powercode.us.redditclonesample.model.rules;
 
-import android.support.annotation.NonNull;
-
 import java.util.Comparator;
 
+import androidx.annotation.NonNull;
 import example.powercode.us.redditclonesample.model.entity.TopicEntity;
 
 /**

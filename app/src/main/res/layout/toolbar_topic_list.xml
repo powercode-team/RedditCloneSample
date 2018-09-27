@@ -5,7 +5,7 @@
 
     <data>
 
-        <import type="android.databinding.ObservableInt" />
+        <import type="androidx.databinding.ObservableInt" />
 
         <import type="android.view.View" />
 

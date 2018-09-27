@@ -1,7 +1,8 @@
 package example.powercode.us.redditclonesample.base.ui.fragments;
 
 import android.content.Context;
-import android.support.annotation.CallSuper;
+
+import androidx.annotation.CallSuper;
 
 /**
  * Implements onAttach and onDetach which are required to interact with Activity

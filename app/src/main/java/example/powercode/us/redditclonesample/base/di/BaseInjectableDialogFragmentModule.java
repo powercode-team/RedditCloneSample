@@ -1,7 +1,6 @@
 package example.powercode.us.redditclonesample.base.di;
 
-import android.support.v7.app.AppCompatDialogFragment;
-
+import androidx.appcompat.app.AppCompatDialogFragment;
 import dagger.Binds;
 import dagger.Module;
 import example.powercode.us.redditclonesample.app.di.scopes.PerFragment;

@@ -1,8 +1,6 @@
 package example.powercode.us.redditclonesample.base.error;
 
-import android.support.annotation.NonNull;
-
-import example.powercode.us.redditclonesample.base.error.ErrorBase;
+import androidx.annotation.NonNull;
 
 /**
  * Defines strategy to parse errors to appropriate view

@@ -1,6 +1,6 @@
 package example.powercode.us.redditclonesample.utils;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Created by dev for RedditCloneSample on 26-Jun-18.

@@ -1,8 +1,7 @@
 package example.powercode.us.redditclonesample.main.di;
 
-import android.support.annotation.IdRes;
-import android.support.annotation.NonNull;
-
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
 import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;

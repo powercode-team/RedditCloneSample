@@ -1,10 +1,10 @@
 package example.powercode.us.redditclonesample.model.common;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.util.ObjectsCompat;
-
 import java.util.Objects;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.util.ObjectsCompat;
 
 /**
  * A generic class that holds a value with its loading status.

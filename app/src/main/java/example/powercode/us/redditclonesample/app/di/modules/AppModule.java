@@ -2,15 +2,11 @@ package example.powercode.us.redditclonesample.app.di.modules;
 
 import android.app.Application;
 import android.content.Context;
-import android.support.annotation.NonNull;
 
-import com.squareup.leakcanary.RefWatcher;
-
+import androidx.annotation.NonNull;
 import dagger.Binds;
 import dagger.Module;
-import dagger.Provides;
 import dagger.android.support.AndroidSupportInjectionModule;
-import example.powercode.us.redditclonesample.app.TheApp;
 import example.powercode.us.redditclonesample.app.di.qualifiers.AppContext;
 import example.powercode.us.redditclonesample.app.di.scopes.PerApplication;
 import example.powercode.us.redditclonesample.model.di.ReposModule;

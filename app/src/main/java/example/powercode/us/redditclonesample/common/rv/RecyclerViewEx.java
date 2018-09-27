@@ -1,14 +1,15 @@
 package example.powercode.us.redditclonesample.common.rv;
 
+
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.support.annotation.IdRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 import example.powercode.us.redditclonesample.R;
 import example.powercode.us.redditclonesample.utils.ViewUtils;
 import timber.log.Timber;
@@ -19,8 +20,10 @@ import timber.log.Timber;
  * Purpose: RecyclerView which supports empty view
  */
 public class RecyclerViewEx extends RecyclerView {
-    private @Nullable View emptyView_;
-    private @IdRes int emptyViewId_;
+    private @Nullable
+    View emptyView_;
+    private @IdRes
+    int emptyViewId_;
 
     private final AdapterDataObserver itemsObserver_ = new AdapterDataObserver() {
         @Override

@@ -3,10 +3,11 @@ package example.powercode.us.redditclonesample.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 /**
  * Helper methods to work with soft keyboard

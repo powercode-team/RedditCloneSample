@@ -1,11 +1,12 @@
 package example.powercode.us.redditclonesample.app.di.qualifiers;
 
-import android.support.v4.app.FragmentActivity;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import javax.inject.Qualifier;
+
+import androidx.fragment.app.FragmentActivity;
 
 /**
  * Qualifier for Activity's FragmentManager {@link FragmentActivity#getSupportFragmentManager()}

@@ -1,8 +1,8 @@
 package example.powercode.us.redditclonesample.base.di;
 
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import dagger.Binds;
 import dagger.Module;
 import example.powercode.us.redditclonesample.app.di.scopes.PerFragment;
