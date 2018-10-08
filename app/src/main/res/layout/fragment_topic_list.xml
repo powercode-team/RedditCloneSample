@@ -44,7 +44,7 @@
             android:layout_height="match_parent"
             android:clipToPadding="false"
             app:emptyView="@id/rc_empty_view"
-            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             tools:listitem="@layout/item_topic" />
 
